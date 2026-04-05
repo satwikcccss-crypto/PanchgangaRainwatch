@@ -30,7 +30,7 @@ jobs:
       - name: Build for GitHub Pages
         run: npm run build
         env:
-          VITE_BASE: /PanchgangaRaingauge/
+          VITE_BASE: /PanchgangaRainwatch/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
