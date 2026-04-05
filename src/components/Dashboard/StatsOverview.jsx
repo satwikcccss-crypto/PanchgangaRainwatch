@@ -38,33 +38,47 @@ const StatCard = ({ station, data, index, onClick, isSelected }) => {
 
       {/* Station number badge */}
       <div
-        className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white"
+        className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-sm"
         style={{ backgroundColor: station.markerColor }}
       >
         {station.stationNo}
       </div>
 
       {/* Header */}
-      <div className="flex items-start gap-2 mb-3 pr-6">
+      <div className="flex items-start gap-2 mb-2 pr-6">
         <div
           className="status-dot mt-1"
           style={{ backgroundColor: data?.status === 'active' ? cfg.color : '#475569' }}
         />
         <div className="min-w-0">
-          <h3 className="text-sm font-bold text-academic-blue truncate leading-tight">
+          <h3 className="text-sm font-black text-academic-blue truncate leading-tight uppercase tracking-tight">
             {station.name}
           </h3>
-          <p className="text-[10px] text-slate-500 font-medium truncate">{station.sensorType}</p>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+              ID: {station.id.slice(0, 8)}
+            </span>
+            <span className="text-[8px] font-bold text-slate-300">|</span>
+            <span className="text-[8px] font-bold text-emerald-600 uppercase tracking-widest">
+              {data?.status === 'active' ? 'Online' : 'Offline'}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* IMD Badge */}
-      <span
-        className="inline-block px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider mb-3"
-        style={{ backgroundColor: cfg.bgColor, color: cfg.color, border: `1px solid ${cfg.borderColor}` }}
-      >
-        {cfg.icon} {cfg.label}
-      </span>
+      {/* Engineering Metadata */}
+      <div className="flex items-center justify-between mb-3">
+        <span
+          className="inline-block px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider"
+          style={{ backgroundColor: cfg.bgColor, color: cfg.color, border: `1px solid ${cfg.borderColor}` }}
+        >
+          {cfg.icon} {cfg.label}
+        </span>
+        <div className="flex items-center gap-1 text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+          <Clock className="w-2.5 h-2.5" />
+          {data?.timestamp ? new Date(data.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : 'Syncing'}
+        </div>
+      </div>
 
       {/* Main reading */}
       <div className="flex items-end justify-between">
