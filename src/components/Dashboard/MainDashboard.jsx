@@ -11,6 +11,7 @@ import QRRegistration from '../Alerts/QRRegistration';
 import InteractiveMap from '../Map/InteractiveMap';
 import { RainGaugeWidget, SimpleRainIndicator, ZoomedGauge } from '../RainGauge/RainGaugeWidget';
 import RainfallChart from '../Charts/RainfallChart';
+import ErrorBoundary from './ErrorBoundary';
 import { fetchAllStations } from '../../services/thingspeakAPI';
 import { STATIONS, POLL_INTERVAL_MS } from '../../config/stations';
 import { getNetworkAlertLevel } from '../../config/imdThresholds';
@@ -252,23 +253,27 @@ const MainDashboard = () => {
                 </div>
               </div>
               <div className="h-[300px]">
-                <RainfallChart
-                  stationData={stationData[selectedId]}
-                  stationName={selectedStation?.name}
-                />
+                <ErrorBoundary label="Rainfall Intensity Chart">
+                  <RainfallChart
+                    stationData={stationData[selectedId]}
+                    stationName={selectedStation?.name}
+                  />
+                </ErrorBoundary>
               </div>
             </div>
 
             {/* Interactive Map */}
             <div className="h-[440px]">
-              <InteractiveMap
-                stationData={stationData}
-                selectedStation={selectedId}
-                onStationClick={(id) => {
-                  setSelectedId(id);
-                  setZoomedStation(STATIONS.find(s => s.id === id));
-                }}
-              />
+              <ErrorBoundary label="Interactive Map">
+                <InteractiveMap
+                  stationData={stationData}
+                  selectedStation={selectedId}
+                  onStationClick={(id) => {
+                    setSelectedId(id);
+                    setZoomedStation(STATIONS.find(s => s.id === id));
+                  }}
+                />
+              </ErrorBoundary>
             </div>
           </div>
 
