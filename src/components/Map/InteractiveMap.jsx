@@ -5,6 +5,7 @@ import { Map as MapIcon } from 'lucide-react';
 import { STATIONS } from '../../config/stations';
 import { MAP_CONFIG } from '../../config/mapConfig';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
+import MeteoGauge from '../Dashboard/MeteoGauge';
 import 'leaflet/dist/leaflet.css';
 
 const { BaseLayer } = LayersControl;
@@ -180,24 +181,52 @@ const InteractiveMap = ({ stationData, selectedStation, onStationClick }) => {
                   </div>
                 </Tooltip>
 
-                {/* ── Click Popup ── */}
-                <Popup maxWidth={280} className="radar-popup">
-                  <div style={{ padding: '4px', minWidth: '240px', fontFamily: 'inherit' }}>
-                    <div style={{ marginBottom: '6px' }}>
-                      <span style={{ fontSize: '9px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
-                        {station.authority}
-                      </span>
-                      <h3 style={{ fontWeight: 900, color: '#0f4c81', fontSize: '13px', margin: '2px 0', lineHeight: 1.2 }}>
-                        {station.name}
-                      </h3>
+                <Popup maxWidth={320} className="rtdas-map-popup">
+                  <div className="p-2 min-w-[280px]">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase block mb-1">
+                          {station.authority} · RG-{station.stationNo}
+                        </span>
+                        <h3 className="text-base font-black text-academic-blue leading-tight uppercase font-serif">
+                          {station.name}
+                        </h3>
+                      </div>
+                      <div className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${isMock ? 'bg-amber-50 text-amber-600 border border-amber-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`}>
+                        {isMock ? 'Demo' : 'Live'}
+                      </div>
                     </div>
-                    <p style={{ fontSize: '10px', color: '#64748b', lineHeight: 1.6, borderLeft: '2px solid #e2e8f0', paddingLeft: '8px', marginBottom: '8px', fontStyle: 'italic' }}>
-                      {station.description}
-                    </p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#94a3b8', paddingTop: '6px', borderTop: '1px solid #f1f5f9' }}>
-                      <span>📍 {station.location.lat.toFixed(4)}°N, {station.location.lng.toFixed(4)}°E</span>
-                      <span style={{ color: isMock ? '#f59e0b' : '#10b981', fontWeight: 700 }}>
-                        {isMock ? '⚠ Demo' : '● Live'}
+
+                    <div className="grid grid-cols-2 gap-4 items-center">
+                      {/* Left: Meteorological Gauge */}
+                      <div className="flex flex-col items-center bg-slate-50/50 rounded-2xl py-4 border border-slate-100">
+                        <MeteoGauge value={d?.dailyCumulative ?? 0} compact={true} />
+                      </div>
+
+                      {/* Right: Technical Stats */}
+                      <div className="space-y-3">
+                        <div className="bg-white border border-slate-100 rounded-xl p-3">
+                          <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Intensity</span>
+                          <div className="text-xl font-black text-slate-800 tabular-nums">
+                            {(d?.hourlyIntensity ?? 0).toFixed(1)}
+                            <span className="text-[10px] ml-1 text-slate-400">mm/h</span>
+                          </div>
+                        </div>
+                        <div className="bg-white border border-slate-100 rounded-xl p-3">
+                          <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Status</span>
+                          <div className={`text-[11px] font-black uppercase ${d?.status === 'active' ? 'text-emerald-500' : 'text-slate-400'}`}>
+                            {d?.status === 'active' ? '● Reporting' : '○ Standby'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                        Sensors Operational
+                      </span>
+                      <span className="text-[9px] font-mono font-bold text-slate-500">
+                        {station.sensorType}
                       </span>
                     </div>
                   </div>

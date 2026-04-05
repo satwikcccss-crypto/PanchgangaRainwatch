@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Activity, Battery, Signal, Info, Droplets, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { STATIONS } from '../../config/stations';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
+import MeteoGauge from './MeteoGauge';
 
 const GaugeCard = ({ station, data, index }) => {
   const cfg = getIMDConfigByKey(data?.imdLevel || 'no_rain');
@@ -34,33 +35,9 @@ const GaugeCard = ({ station, data, index }) => {
         </div>
       </div>
 
-      {/* Vertical Meteorological Tube */}
-      <div className="flex justify-center mb-8 relative">
-        <div className="meteo-gauge-v2">
-          {/* Glass tube */}
-          <div className="meteo-tube-v2"></div>
-          
-          {/* Water level */}
-          <div 
-            className="meteo-water-v2" 
-            style={{ height: `${percent}%` }}
-          ></div>
-          
-          {/* Scale markings */}
-          <div className="meteo-scale-v2">
-            {[120, 100, 80, 60, 40, 20, 0].map(val => (
-              <div key={val} className="flex items-center justify-end gap-1.5">
-                <span className="tabular-nums">{val}</span>
-                <div className="meteo-tick-v2"></div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Current value floating badge */}
-          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white border-2 border-slate-800 text-slate-900 text-3xl font-black rounded-2xl px-4 py-1.5 shadow-xl z-30 tabular-nums">
-            {current.toFixed(1)}<span className="text-[10px] uppercase ml-1 opacity-50">mm</span>
-          </div>
-        </div>
+      {/* Vertical Meteorological Tube (Refined) */}
+      <div className="flex justify-center mb-8 relative pt-4">
+        <MeteoGauge value={current} />
       </div>
 
       {/* Rainfall Intensity bar */}
