@@ -1,7 +1,7 @@
 {
   "name": "panchganga-raingauge-dashboard",
   "version": "1.0.0",
-  "homepage": "https://satwikcccss-crypto.github.io/PanchgangaRaingauge/",
+  "homepage": "https://satwikcccss-crypto.github.io/PanchgangaRainwatch/",
   "type": "module",
   "description": "Real-time rain gauge monitoring dashboard for Panchganga Basin — IMD classification system",
   "scripts": {

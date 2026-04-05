@@ -1,15 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
+// Build modes:
+//   VITE_BASE=./              → relative paths (for CCCSS-SUK-dashboard embed)
+//   VITE_BASE=/PanchgangaRainwatch/  → GitHub Pages standalone deploy (default)
+const base = process.env.VITE_BASE || '/PanchgangaRainwatch/';
+
 export default defineConfig({
-  base: '/PanchgangaRaingauge/',
+  base,
   plugins: [react()],
   server: {
     port: 5173,
-    host: true, // Enable for Google IDX and LAN access
+    host: true,
     proxy: {
-      // Proxy ThingSpeak API to avoid CORS issues
       '/api/thingspeak': {
         target: 'https://api.thingspeak.com',
         changeOrigin: true,
@@ -19,25 +22,21 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false, // Disable for smaller build size
-    minify: 'terser', // Better compression
+    sourcemap: false,
+    minify: 'terser',
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          'map-vendor': ['leaflet', 'react-leaflet'],
+          'map-vendor':   ['leaflet', 'react-leaflet'],
           'chart-vendor': ['chart.js', 'react-chartjs-2']
         }
       }
     },
-    // Optimize for smaller builds
     terserOptions: {
-      compress: {
-        drop_console: true, // Remove console logs in production
-        drop_debugger: true
-      }
+      compress: { drop_console: true, drop_debugger: true }
     },
-    chunkSizeWarningLimit: 1000 // Increase limit for chunks
+    chunkSizeWarningLimit: 1000
   },
   optimizeDeps: {
     include: ['leaflet', 'chart.js']

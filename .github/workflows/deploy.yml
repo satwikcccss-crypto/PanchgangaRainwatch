@@ -27,8 +27,10 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm install
-      - name: Build
+      - name: Build for GitHub Pages
         run: npm run build
+        env:
+          VITE_BASE: /PanchgangaRaingauge/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
