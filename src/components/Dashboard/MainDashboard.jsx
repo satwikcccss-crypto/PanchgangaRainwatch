@@ -306,28 +306,6 @@ const MainDashboard = () => {
           </div>
         </div>
 
-        {/* ── Telemetry Status Row ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-8 pb-4">
-          {[
-            { icon: <Activity className="w-3.5 h-3.5 text-blue-600" />, label: 'Active Nodes', value: `0${STATIONS.length} of 0${STATIONS.length}` },
-            { icon: <Globe    className="w-3.5 h-3.5 text-emerald-600" />, label: 'Gateway', value: 'SU-RTDAS-RG-01' },
-            { icon: <Clock    className="w-3.5 h-3.5 text-amber-600" />, label: 'Latency', value: '< 1500 ms' },
-            { icon: <ShieldAlert className="w-3.5 h-3.5 text-blue-600" />, label: 'Protocol', value: 'TLS 1.3 / AES', hidden: true },
-            { icon: <Radio    className="w-3.5 h-3.5 text-indigo-600" />, label: 'Uplink', value: 'ThingSpeak API' },
-          ].map(({ icon, label, value, hidden }) => (
-            <div
-              key={label}
-              className={`bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow ${hidden ? 'max-lg:hidden' : ''}`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                {icon}
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{label}</span>
-              </div>
-              <div className="text-[13px] font-mono font-bold text-slate-800 truncate">{value}</div>
-            </div>
-          ))}
-        </div>
-
       </div>
 
       <DisclaimerFooter />
