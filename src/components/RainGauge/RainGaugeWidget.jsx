@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Droplets, CloudRain, Zap } from 'lucide-react';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
+import MeteoGauge from '../Dashboard/MeteoGauge';
 
 // ─── Animated falling raindrops ─────────────────────────────────────────────
 const MAX_INTENSITY_DISPLAY = 30; // mm/hr ← maps to 100% fill on gauge
@@ -253,19 +254,57 @@ export const ZoomedGauge = ({ station, data, onClose }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center z-[210] pointer-events-none"
+            className="fixed inset-0 flex items-center justify-center z-[210] pointer-events-none p-4"
           >
-            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm pointer-events-auto relative"
-              style={{ border: `2px solid ${cfg.color}40` }}
+            <div className="bg-white rounded-[2rem] shadow-2xl p-8 w-full max-w-sm pointer-events-auto relative overflow-hidden"
+              style={{ border: `2px solid ${cfg.color}30` }}
             >
+              {/* Decorative accent */}
+              <div className="absolute top-0 left-0 right-0 h-1.5" style={{ backgroundColor: cfg.color }} />
+
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-1.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-red-500 transition-colors"
+                className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-red-500 transition-colors z-50"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               </button>
-              <div style={{ height: '380px' }}>
-                <RainGaugeWidget station={station} data={data} onClick={() => {}} />
+
+              <div className="mb-8">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-2 font-sans">
+                  RG-{station.stationNo} · {station.authority}
+                </span>
+                <h3 className="text-2xl font-black text-academic-blue leading-tight uppercase font-serif">
+                  {station.name}
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 gap-8 items-center">
+                <div className="flex justify-center bg-slate-50/50 py-10 rounded-[2.5rem] border border-slate-100 relative">
+                  <MeteoGauge value={data?.dailyCumulative ?? 0} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-white border-2 border-slate-100 rounded-2xl p-4 text-center">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Intensity</span>
+                    <div className="text-2xl font-black text-slate-800 tabular-nums">
+                      {(data?.hourlyIntensity ?? 0).toFixed(1)}
+                      <span className="text-xs ml-1 text-slate-400">mm/h</span>
+                    </div>
+                  </div>
+                  <div className="bg-white border-2 border-slate-100 rounded-2xl p-4 text-center">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Alert Level</span>
+                    <div className="text-[11px] font-black uppercase px-2 py-1 rounded-md" style={{ backgroundColor: cfg.bgColor, color: cfg.color }}>
+                      {cfg.label}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                <span>Sensor: {station.sensorType}</span>
+                <span className={data?.isMockData ? 'text-amber-500' : 'text-emerald-500'}>
+                  {data?.isMockData ? '⚠ Demo Data' : '● Live RTDAS'}
+                </span>
               </div>
             </div>
           </motion.div>

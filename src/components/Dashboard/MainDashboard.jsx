@@ -215,17 +215,10 @@ const MainDashboard = () => {
           onViewChange={setActiveView}
         />
 
-        {/* ── View Switcher Content ── */}
-        <AnimatePresence mode="wait">
+        {/* ── View Switcher Content (Simplified for Debug) ── */}
+        <div className="mt-4">
           {activeView === 'home' ? (
-            <motion.div
-              key="home"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-6 mt-4"
-            >
+            <div className="space-y-6">
               <AlertBanner imdLevelKey={networkAlertKey} />
               
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
@@ -265,7 +258,7 @@ const MainDashboard = () => {
                     <ErrorBoundary label="Interactive Map">
                       <InteractiveMap
                         stationData={stationData}
-                        selectedStation={selectedId}
+                        selectedId={selectedId}
                         onStationClick={(id) => {
                           setSelectedId(id);
                           setZoomedStation(STATIONS.find(s => s.id === id));
@@ -294,22 +287,15 @@ const MainDashboard = () => {
                   <QRRegistration />
                 </div>
               </div>
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
-              key="network"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="mt-6"
-            >
+            <div className="mt-6">
               <ErrorBoundary label="Sensor Network View">
                 <NetworkSensors stationData={stationData} />
               </ErrorBoundary>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
 
       <DisclaimerFooter />
