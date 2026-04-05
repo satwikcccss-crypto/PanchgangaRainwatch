@@ -182,7 +182,7 @@ const InteractiveMap = ({ stationData, selectedId, onStationClick }) => {
 
         {/* IMD legend */}
         <div className="absolute top-2 left-2 z-[1000] bg-white/95 backdrop-blur border border-slate-200 px-3 py-2 rounded-md shadow-sm pointer-events-none font-sans">
-          <div className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1">IMD Scale</div>
+          <div className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1">Rainfall Scale</div>
           {[
             { label: 'Light',        color: '#22c55e' },
             { label: 'Moderate',     color: '#eab308' },

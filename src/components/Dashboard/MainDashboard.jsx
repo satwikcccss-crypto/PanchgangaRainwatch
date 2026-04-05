@@ -78,13 +78,13 @@ const InfoPanel = ({ isOpen, onClose }) => (
               Rainfall data is captured by <strong>tipping-bucket rain gauges</strong> installed at 5
               stations across the Panchganga Basin. Telemetry is transmitted via{' '}
               <strong>ThingSpeak IoT API</strong>. Hourly intensity and instantaneous rainfall rate are
-              computed on-client using IMD classification standards.
+              computed on-client using Rainfall Classification standards.
             </p>
           </section>
 
           <section>
             <h3 className="text-xs font-bold text-academic-gold uppercase tracking-widest mb-3 flex items-center gap-2">
-              <CloudRain className="w-4 h-4" /> IMD CLASSIFICATION
+              <CloudRain className="w-4 h-4" /> RAINFALL CLASSIFICATION
             </h3>
             <div className="space-y-1.5">
               {[
@@ -111,7 +111,7 @@ const InfoPanel = ({ isOpen, onClose }) => (
             <p className="text-[11px] text-amber-800 leading-relaxed">
               This dashboard is developed by CCCSS, Shivaji University and is currently{' '}
               <strong>under active development</strong>. All data is <strong>academic and research-derived</strong>{' '}
-              — for awareness purposes only. Official flood decisions must rely on IMD / WRD / CWC sources.
+              — for awareness purposes only. Official flood decisions must rely on official government sources.
               <br /><br />
               Data and site ownership: <strong>CCCSS, Shivaji University, Kolhapur</strong>.
               Unauthorised reproduction is prohibited.
@@ -128,7 +128,7 @@ const InfoPanel = ({ isOpen, onClose }) => (
                 { label: 'Police Control Room', num: '100'  },
                 { label: 'Disaster Management', num: '108'  },
                 { label: 'WRD Maharashtra',     num: '022-22027990' },
-                { label: 'IMD Pune',            num: '020-25535435' },
+                { label: 'Meteorological Dept', num: '020-25535435' },
               ].map((c, i, arr) => (
                 <div key={c.label}
                   className={`flex justify-between font-bold text-slate-700 py-2 ${i < arr.length - 1 ? 'border-b border-slate-200' : ''}`}
@@ -151,7 +151,7 @@ const DisclaimerFooter = () => (
     <p className="text-[10px] text-amber-800 font-medium leading-relaxed max-w-5xl mx-auto">
       <strong>⚠ Academic Disclaimer:</strong> This dashboard is developed by CCCSS, Shivaji University Kolhapur
       and is under active development. Data is academic and research-derived — for awareness purposes only.
-      Official emergency decisions must rely on IMD / WRD / CWC sources.
+      Official emergency decisions must rely on official government sources.
       Site &amp; data ownership: <strong>CCCSS, Shivaji University, Kolhapur</strong>. |{' '}
       <span className="text-amber-700 font-bold">
         Demo data shown until ThingSpeak channels are configured.

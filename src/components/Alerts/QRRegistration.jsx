@@ -18,7 +18,7 @@ const QRRegistration = () => (
       </div>
       <div>
         <p className="text-[10px] text-slate-600 leading-relaxed">
-          Scan to register for <strong>IMD-classified rainfall alerts</strong> via SMS/WhatsApp for
+          Scan to register for <strong>rainfall intensity alerts</strong> via SMS/WhatsApp for
           Panchganga Basin stations.
         </p>
         <a

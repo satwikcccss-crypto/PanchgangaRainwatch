@@ -45,7 +45,7 @@ const AlertBanner = ({ imdLevelKey }) => {
                 className="text-xs font-black uppercase tracking-widest"
                 style={{ color: cfg.color }}
               >
-                {cfg.icon} {cfg.label} — IMD NETWORK ALERT
+                {cfg.icon} {cfg.label} — RAINFALL NETWORK ALERT
               </span>
               <p className="text-[11px] text-slate-600 mt-0.5">{cfg.description}</p>
             </div>
