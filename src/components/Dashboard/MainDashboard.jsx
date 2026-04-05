@@ -5,7 +5,7 @@ import {
   AlertCircle, Phone, Clock, Radio, CloudRain, Droplets,
 } from 'lucide-react';
 import HeaderBar from './HeaderBar';
-import StatsOverview from './StatsOverview';
+import NetworkSensors from './NetworkSensors';
 import AlertBanner from '../Alerts/AlertBanner';
 import QRRegistration from '../Alerts/QRRegistration';
 import InteractiveMap from '../Map/InteractiveMap';
@@ -215,11 +215,9 @@ const MainDashboard = () => {
         {/* Network alert banner */}
         <AlertBanner imdLevelKey={networkAlertKey} />
 
-        {/* Station summary cards */}
-        <StatsOverview
+        {/* New Sensor Network Section */}
+        <NetworkSensors
           stationData={stationData}
-          selectedId={selectedId}
-          onStationClick={setSelectedId}
         />
 
         {/* ── Main Grid ── */}
