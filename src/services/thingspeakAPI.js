@@ -10,6 +10,7 @@ import {
   calculateHourlyIntensity,
   calculateInstantaneousRate,
   calculateDailyCumulative,
+  getRollingStats,
   buildTimeSeries,
 } from '../utils/rainfallCalculations';
 
@@ -37,8 +38,9 @@ const parseFeeds = (feeds, station) => {
   const hourlyIntensity   = calculateHourlyIntensity(feeds, FIELD);
   const instantaneousRate = calculateInstantaneousRate(feeds, FIELD);
   const dailyCumulative   = calculateDailyCumulative(feeds, FIELD);
+  const rollingStats      = getRollingStats(feeds, FIELD);
   const imdLevel          = classifyRainfall(hourlyIntensity);
-  const timeSeries        = buildTimeSeries(feeds, FIELD, 6);
+  const timeSeries        = buildTimeSeries(feeds, FIELD, 12); // Past 12h for hyetograph
 
   return {
     stationId:          station.id,
@@ -47,6 +49,7 @@ const parseFeeds = (feeds, station) => {
     hourlyIntensity,       // mm/hr — used for IMD classification
     instantaneousRate,     // mm/hr — most recent interval rate
     dailyCumulative,       // mm — total today since midnight IST
+    rollingStats,          // { '1h', '3h', '6h', '12h', '24h' }
     rawLatestValue:     parseFloat(latest[FIELD]) || 0,
     imdLevel,
     timeSeries,

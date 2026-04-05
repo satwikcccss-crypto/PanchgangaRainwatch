@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Droplets, CloudRain, Zap } from 'lucide-react';
+import { X, Droplets, CloudRain, Zap, Activity, Globe, MapPin, Clock } from 'lucide-react';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
 import MeteoGauge from '../Dashboard/MeteoGauge';
+import RainfallChart from '../Charts/RainfallChart';
 
 // ─── Animated falling raindrops ─────────────────────────────────────────────
 const MAX_INTENSITY_DISPLAY = 30; // mm/hr ← maps to 100% fill on gauge
@@ -251,60 +252,128 @@ export const ZoomedGauge = ({ station, data, onClose }) => {
             onClick={onClose}
           />
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center z-[210] pointer-events-none p-4"
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center z-[210] pointer-events-none p-4 md:p-8"
           >
-            <div className="bg-white rounded-[2rem] shadow-2xl p-8 w-full max-w-sm pointer-events-auto relative overflow-hidden"
-              style={{ border: `2px solid ${cfg.color}30` }}
+            <div className="bg-white rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(30,58,138,0.25)] w-full max-w-5xl pointer-events-auto relative overflow-hidden flex flex-col md:flex-row border border-slate-200"
+              style={{ maxHeight: 'calc(100vh - 80px)' }}
             >
-              {/* Decorative accent */}
-              <div className="absolute top-0 left-0 right-0 h-1.5" style={{ backgroundColor: cfg.color }} />
-
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-red-500 transition-colors z-50"
+                className="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-red-500 hover:text-white rounded-full text-slate-500 transition-all z-[100] shadow-sm"
               >
                 <X className="w-6 h-6" />
               </button>
 
-              <div className="mb-8">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-2 font-sans">
-                  RG-{station.stationNo} · {station.authority}
-                </span>
-                <h3 className="text-2xl font-black text-academic-blue leading-tight uppercase font-serif">
-                  {station.name}
-                </h3>
-              </div>
+              {/* ── Left Sidebar (Station Info & Gauge) ────────────────── */}
+              <div className="w-full md:w-[320px] bg-slate-50 border-r border-slate-100 p-8 flex flex-col gap-6">
+                <div className="space-y-4">
+                   <div className="aspect-square rounded-3xl overflow-hidden border-2 border-white shadow-xl relative bg-slate-200">
+                     <img 
+                       src={station.imageUrl} 
+                       alt={station.name} 
+                       className="w-full h-full object-cover"
+                       onLoad={(e) => e.target.classList.add('opacity-100')}
+                       onError={(e) => {
+                         e.target.src = 'https://images.unsplash.com/photo-1544653852-237285eec32b?q=80&w=400&auto=format&fit=crop';
+                       }}
+                     />
+                     <div className="absolute top-3 left-3 bg-academic-blue/90 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+                        <span className="text-[9px] font-black text-white uppercase tracking-wider">RG-{station.stationNo}</span>
+                     </div>
+                   </div>
 
-              <div className="grid grid-cols-1 gap-8 items-center">
-                <div className="flex justify-center bg-slate-50/50 py-10 rounded-[2.5rem] border border-slate-100 relative">
+                   <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                      {station.authority}
+                    </span>
+                    <h3 className="text-xl font-black text-academic-blue leading-tight uppercase font-serif">
+                      {station.name}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-2 text-[10px] font-bold text-slate-500 uppercase">
+                      <MapPin className="w-3 h-3 text-academic-gold" />
+                      {station.location.lat.toFixed(4)}°N, {station.location.lng.toFixed(4)}°E
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-3xl p-6 border border-slate-200/60 shadow-sm flex flex-col items-center gap-3">
                   <MeteoGauge value={data?.dailyCumulative ?? 0} />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-white border-2 border-slate-100 rounded-2xl p-4 text-center">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Intensity</span>
-                    <div className="text-2xl font-black text-slate-800 tabular-nums">
-                      {(data?.hourlyIntensity ?? 0).toFixed(1)}
-                      <span className="text-xs ml-1 text-slate-400">mm/h</span>
-                    </div>
-                  </div>
-                  <div className="bg-white border-2 border-slate-100 rounded-2xl p-4 text-center">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Alert Level</span>
-                    <div className="text-[11px] font-black uppercase px-2 py-1 rounded-md" style={{ backgroundColor: cfg.bgColor, color: cfg.color }}>
-                      {cfg.label}
-                    </div>
-                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
+                     Atmospheric Load
+                  </span>
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                <span>Sensor: {station.sensorType}</span>
-                <span className={data?.isMockData ? 'text-amber-500' : 'text-emerald-500'}>
-                  {data?.isMockData ? '⚠ Demo Data' : '● Live RTDAS'}
-                </span>
+              {/* ── Main Panel (Analytics & Hyetograph) ───────────────── */}
+              <div className="flex-1 p-8 flex flex-col gap-8 overflow-y-auto">
+                {/* Rolling Analytics (IS Standard Window) */}
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                  {[
+                    { label: 'Current 1h',  val: data?.rollingStats?.['1h'] || 0, color: 'text-blue-600' },
+                    { label: 'Rolling 3h',  val: data?.rollingStats?.['3h'] || 0, color: 'text-emerald-500' },
+                    { label: 'Rolling 6h',  val: data?.rollingStats?.['6h'] || 0, color: 'text-amber-500' },
+                    { label: 'Rolling 12h', val: data?.rollingStats?.['12h'] || 0, color: 'text-orange-500' },
+                    { label: 'Rolling 24h', val: data?.rollingStats?.['24h'] || 0, color: 'text-red-500' },
+                  ].map((stat, i) => (
+                    <div key={i} className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter block mb-1">
+                        {stat.label}
+                      </span>
+                      <div className={`text-lg font-black tabular-nums ${stat.color}`}>
+                        {parseFloat(stat.val).toFixed(1)}
+                        <span className="text-[10px] ml-1 opacity-50 uppercase">mm</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Hyetograph Section */}
+                <div className="flex-1 min-h-[300px] flex flex-col bg-white border border-slate-100 rounded-3xl p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h4 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-academic-blue" />
+                      Station Hyetograph — Intensity vs. Accumulation
+                    </h4>
+                    <div className="flex items-center gap-2">
+                       <div className="w-2 h-2 rounded-full bg-academic-blue animate-pulse" />
+                       <span className="text-[10px] font-bold text-slate-400 uppercase">Live Telemetry</span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <RainfallChart stationData={data} stationName={station.name} />
+                  </div>
+                </div>
+
+                {/* Technical Metadata Footer */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-slate-100">
+                  <div>
+                    <span className="text-[9px] font-black text-slate-400 uppercase block mb-1">Battery Power</span>
+                    <div className="text-[11px] font-bold text-slate-700 flex items-center gap-2">
+                      <Zap className="w-3 h-3 text-amber-500" />
+                      {data?.batteryVoltage ? `${data.batteryVoltage.toFixed(2)} V` : 'N/A'}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-black text-slate-400 uppercase block mb-1">Uplink Health</span>
+                    <div className="text-[11px] font-bold text-slate-700 flex items-center gap-2">
+                      <Globe className="w-3 h-3 text-emerald-500" />
+                      {data?.signalStrength ? `${data.signalStrength} / 100` : 'Search...'}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-black text-slate-400 uppercase block mb-1">Sensor Standard</span>
+                    <div className="text-[11px] font-bold text-slate-700">ISO/IS 0.2mm TP</div>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-black text-slate-400 uppercase block mb-1">Data Source</span>
+                    <div className={data?.isMockData ? 'text-amber-500 font-bold text-[10px] uppercase' : 'text-emerald-500 font-bold text-[10px] uppercase'}>
+                      {data?.isMockData ? '⚠ Demo Dataset' : '● Cryptograph Encrypted'}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>

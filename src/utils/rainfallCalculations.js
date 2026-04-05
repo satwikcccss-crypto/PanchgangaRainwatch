@@ -146,6 +146,53 @@ export const calculateDailyCumulative = (feeds, field = 'field1') => {
 };
 
 /**
+ * Calculate rolling rainfall accumulations (IS standard windows)
+ * Returns { '1h': x, '3h': y, '6h': z, '12h': a, '24h': b }
+ *
+ * @param {Array} feeds 
+ * @param {string} field
+ */
+export const getRollingStats = (feeds, field = 'field1') => {
+  if (!feeds || feeds.length < 2) return { '1h': 0, '3h': 0, '6h': 0, '12h': 0, '24h': 0 };
+
+  const now = new Date();
+  const windows = {
+    '1h':  1 * 3600 * 1000,
+    '3h':  3 * 3600 * 1000,
+    '6h':  6 * 3600 * 1000,
+    '12h': 12 * 3600 * 1000,
+    '24h': 24 * 3600 * 1000,
+  };
+
+  const stats = {};
+  
+  // Pre-sort ascending for increment math
+  const sorted = [...feeds].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+  Object.entries(windows).forEach(([label, ms]) => {
+    const cutoff = new Date(now.getTime() - ms);
+    const windowFeeds = sorted.filter(f => new Date(f.created_at) >= cutoff);
+    
+    if (windowFeeds.length < 2) {
+      stats[label] = 0;
+      return;
+    }
+
+    let total = 0;
+    if (DATA_MODE === 'cumulative') {
+      for (let i = 1; i < windowFeeds.length; i++) {
+        total += safeIncrement(windowFeeds[i - 1][field], windowFeeds[i][field]);
+      }
+    } else {
+      total = windowFeeds.reduce((sum, f) => sum + (parseFloat(f[field]) || 0), 0);
+    }
+    stats[label] = parseFloat(total.toFixed(2));
+  });
+
+  return stats;
+};
+
+/**
  * Build time-series array for the chart
  * Returns [{time, intensity, cumulative}] for the past `hoursBack` hours
  *

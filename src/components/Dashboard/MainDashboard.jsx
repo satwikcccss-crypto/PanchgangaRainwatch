@@ -268,21 +268,20 @@ const MainDashboard = () => {
                   </div>
                 </div>
 
-                {/* Right Column (Gauges) */}
                 <div className="xl:col-span-4 space-y-4">
-                  <div className="flex flex-col gap-3">
-                    {shuffledStations.map(s => (
-                      <SimpleRainIndicator
-                        key={s.id}
-                        station={s}
-                        data={stationData[s.id]}
-                        active={selectedId === s.id}
-                        onClick={() => {
-                          setSelectedId(s.id);
-                          setZoomedStation(s);
-                        }}
-                      />
-                    ))}
+                  <div className="academic-panel p-6 bg-academic-blue/5 border-academic-blue/10">
+                    <h3 className="text-xs font-black text-academic-blue uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                       <Radio className="w-4 h-4" /> Technical Archiving
+                    </h3>
+                    <p className="text-[11px] text-slate-500 font-bold mb-6 leading-relaxed uppercase">
+                      Download high-resolution sensor telemetry in IS-standard Excel format (.xls) including intensity, daily accumulations, and system health logs.
+                    </p>
+                    <button
+                      onClick={() => exportTechnicalData(stationData)}
+                      className="w-full bg-academic-blue text-white py-3 5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-500/10"
+                    >
+                      <Globe className="w-4 h-4" /> Export Technical Data
+                    </button>
                   </div>
                   <QRRegistration />
                 </div>

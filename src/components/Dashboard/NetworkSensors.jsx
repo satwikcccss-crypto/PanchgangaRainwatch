@@ -5,7 +5,7 @@ import { STATIONS } from '../../config/stations';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
 import MeteoGauge from './MeteoGauge';
 
-const GaugeCard = ({ station, data, index }) => {
+const GaugeCard = ({ station, data, index, onStationClick }) => {
   const cfg = getIMDConfigByKey(data?.imdLevel || 'no_rain');
   const current = data?.dailyCumulative ?? 0;
   const intensity = data?.hourlyIntensity ?? 0;
@@ -20,7 +20,7 @@ const GaugeCard = ({ station, data, index }) => {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="glass-light rounded-3xl p-6 flex flex-col h-full border border-slate-200/60"
+      className="glass-light rounded-3xl p-6 flex flex-col h-full border border-slate-200/60 group"
     >
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
@@ -29,8 +29,8 @@ const GaugeCard = ({ station, data, index }) => {
           <p className="text-slate-500 text-[11px] font-bold uppercase tracking-wider mt-0.5">{station.shortName}</p>
         </div>
         <div className="text-right">
-          <span className="px-3 py-1 bg-slate-100 text-slate-500 rounded-full font-mono text-[9px] font-bold">
-            {data?.lastSeen?.split(' ')[1] || '00:00'} IST
+          <span className="px-3 py-1 bg-white/80 text-slate-500 rounded-full font-mono text-[9px] font-bold shadow-sm">
+            {data?.timestamp ? new Date(data.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '00:00'} IST
           </span>
         </div>
       </div>
@@ -54,15 +54,10 @@ const GaugeCard = ({ station, data, index }) => {
             style={{ backgroundColor: intensityColor }}
           ></motion.div>
         </div>
-        <div className="flex justify-between text-[8px] font-black uppercase tracking-tighter text-slate-400">
-          <span>Light</span>
-          <span>Moderate</span>
-          <span>Heavy</span>
-        </div>
       </div>
 
       {/* Technical Telemetry */}
-      <div className="grid grid-cols-3 gap-2 text-center mt-8 pt-6 border-t border-slate-100">
+      <div className="grid grid-cols-3 gap-2 text-center mt-6 pt-6 border-t border-slate-100">
         <div>
           <div className="flex items-center justify-center gap-1 mb-1 text-slate-400">
             <Signal className="w-3 h-3" />
@@ -91,11 +86,19 @@ const GaugeCard = ({ station, data, index }) => {
           </div>
         </div>
       </div>
+
+      {/* Action Button */}
+      <button
+        onClick={() => onStationClick?.(station.id)}
+        className="mt-6 w-full py-3 bg-white border border-slate-200 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] text-slate-400 hover:bg-academic-blue hover:text-white hover:border-academic-blue transition-all shadow-sm"
+      >
+        View Analytics
+      </button>
     </motion.div>
   );
 };
 
-const NetworkSensors = ({ stationData = {} }) => {
+const NetworkSensors = ({ stationData = {}, onStationClick }) => {
   const dataArray = Object.values(stationData || {});
   
   // Calculations for summary metrics (safe defaults)
@@ -150,6 +153,7 @@ const NetworkSensors = ({ stationData = {} }) => {
             station={station} 
             data={stationData[station.id]} 
             index={i} 
+            onStationClick={onStationClick}
           />
         ))}
       </div>
