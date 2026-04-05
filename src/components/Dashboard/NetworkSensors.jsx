@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Activity, Battery, Signal, Info, Droplets, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Activity, Battery, Signal, Info, Droplets, Globe, Clock, ShieldAlert, Radio } from 'lucide-react';
 import { STATIONS } from '../../config/stations';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
 import MeteoGauge from './MeteoGauge';
