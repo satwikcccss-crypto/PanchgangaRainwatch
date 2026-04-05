@@ -40,32 +40,33 @@ export const exportTechnicalData = (stationData) => {
 
   // Sheet 1: Intensity mm/hr
   const intensityData = stations.map(s => ({
-    Station: s.stationName,
+    Station: s.stationName || 'Unknown',
     ID: s.stationId,
-    'Intensity (mm/hr)': s.hourlyIntensity,
-    'Inst. Rate (mm/hr)': s.instantaneousRate,
-    'IMD Category': s.imdLevel.label,
-    Timestamp: s.timestamp
+    'Intensity (mm/hr)': s.hourlyIntensity || 0,
+    'Inst. Rate (mm/hr)': s.instantaneousRate || 0,
+    'IMD Category': s.imdLevel?.label || 'No Rain',
+    Timestamp: s.timestamp ? new Date(s.timestamp).toLocaleString('en-IN') : 'N/A'
   }));
 
   // Sheet 2: Daily Accumulations
   const dailyData = stations.map(s => ({
-    Station: s.stationName,
-    'Total Today (mm)': s.dailyCumulative,
+    Station: s.stationName || 'Unknown',
+    'Total Today (mm)': s.dailyCumulative || 0,
+    '1h Rolling': s.rollingStats?.['1h'] || 0,
     '3h Rolling': s.rollingStats?.['3h'] || 0,
     '6h Rolling': s.rollingStats?.['6h'] || 0,
     '12h Rolling': s.rollingStats?.['12h'] || 0,
-    '24h Rolling': s.rollingStats?.['24h'] || 0,
-    Status: s.status
+    '24h Rolling': s.rollingStats?.['24h'] || 0
   }));
 
   // Sheet 3: System Health
   const healthData = stations.map(s => ({
-    Station: s.stationName,
+    Station: s.stationName || 'Unknown',
     'Voltage (V)': s.batteryVoltage || 'N/A',
     'Signal (RSSI)': s.signalStrength || 'N/A',
     'Temp (C)': s.temperature || 'N/A',
-    'Data Type': s.isMockData ? 'DEMO' : 'LIVE'
+    'Data Type': s.isMockData ? 'DEMO' : 'LIVE',
+    Status: s.status || 'Active'
   }));
 
   const template = `<?xml version="1.0"?>

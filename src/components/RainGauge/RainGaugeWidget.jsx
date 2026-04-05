@@ -180,67 +180,65 @@ export const RainGaugeWidget = ({ station, data, onClick }) => {
 
 // ─── Compact list indicator (right column) ──────────────────────────────────
 export const SimpleRainIndicator = ({ station, data, active, onClick }) => {
-  const intensity = data?.hourlyIntensity ?? 0;
   const cfg       = getIMDConfigByKey(data?.imdLevel || 'no_rain');
-  const fillPct   = Math.min(100, (intensity / MAX_INTENSITY_DISPLAY) * 100);
+  const intensity = data?.hourlyIntensity ?? 0;
+  const cumulative = data?.dailyCumulative ?? 0;
+  const isRising   = intensity > 0.5;
 
   return (
     <motion.div
-      whileHover={{ x: 3 }}
+      whileHover={{ y: -2 }}
       onClick={onClick}
-      className="academic-panel p-3 cursor-pointer flex items-center gap-3 transition-all"
-      style={{
-        borderColor: active ? cfg.color : undefined,
-        boxShadow:   active ? `0 0 0 2px ${cfg.color}30` : undefined,
-      }}
+      className={`bg-white rounded-lg p-4 border transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${active ? 'ring-2 ring-academic-blue/10 border-academic-blue shadow-md' : 'border-slate-200 shadow-sm'}`}
+      style={{ height: '140px' }}
     >
-      {/* Station colour dot */}
-      <div
-        className="w-3 h-3 rounded-full flex-shrink-0"
-        style={{ backgroundColor: station.markerColor }}
+      {/* Floodwatch Side Accent */}
+      <div 
+        className="absolute left-0 top-0 bottom-0 w-1" 
+        style={{ backgroundColor: station.markerColor || cfg.color }}
       />
-
-      {/* Mini tube */}
-      <div className="w-4 h-12 bg-slate-100 border border-slate-300 rounded-sm relative overflow-hidden flex-shrink-0">
-        <motion.div
-          className="absolute bottom-0 left-0 right-0"
-          animate={{ height: `${fillPct}%` }}
-          transition={{ duration: 1 }}
-          style={{
-            background: `linear-gradient(180deg, ${cfg.color}aa, ${cfg.color})`,
-          }}
-        />
-        <div
-          className="absolute left-0 right-0 h-px"
-          style={{ bottom: `${(2.5 / MAX_INTENSITY_DISPLAY) * 100}%`, backgroundColor: '#eab308' }}
-        />
-        <div
-          className="absolute left-0 right-0 h-px"
-          style={{ bottom: `${(15.6 / MAX_INTENSITY_DISPLAY) * 100}%`, backgroundColor: '#ef4444' }}
-        />
+      
+      {/* Header */}
+      <div className="flex justify-between items-start">
+        <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] leading-tight pr-2">
+          {station.name.toUpperCase()}
+        </h4>
+        <Activity className="w-3.5 h-3.5 opacity-20" style={{ color: cfg.color }} />
       </div>
 
-      {/* Text */}
-      <div className="flex-1 min-w-0">
-        <div className="text-xs font-bold text-academic-blue truncate">{station.shortName}</div>
-        <div className="text-[10px] text-slate-500">
-          Stn {station.stationNo} · {data?.isMockData ? '⚠ Demo' : '● Live'}
+      {/* Value & Trend */}
+      <div className="mt-1">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">
+            {cumulative.toFixed(2)}
+          </span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">MM</span>
+        </div>
+        <div className="flex items-center gap-1 mt-0.5">
+          {isRising ? (
+            <TrendingUp className="w-3 h-3 text-emerald-500" />
+          ) : (
+            <Minus className="w-3 h-3 text-slate-300" />
+          )}
+          <span className={`text-[8px] font-black uppercase tracking-widest ${isRising ? 'text-emerald-500' : 'text-slate-400'}`}>
+            {isRising ? 'RISING' : 'STABLE'}
+          </span>
         </div>
       </div>
 
-      {/* Reading */}
-      <div className="text-right flex-shrink-0">
-        <div className="text-sm font-black font-mono" style={{ color: cfg.color }}>
-          {intensity.toFixed(1)}
+      {/* Footer */}
+      <div className="flex justify-between items-end">
+        <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">TELEMETRY</span>
+        <div className="text-[9px] font-black uppercase tracking-tight py-0.5 px-2 rounded-full bg-slate-50 border border-slate-100" style={{ color: cfg.color }}>
+          {cfg.label}
         </div>
-        <div className="text-[8px] font-bold text-slate-400 uppercase">mm/hr</div>
       </div>
     </motion.div>
   );
 };
 
-// ─── Zoomed modal gauge ──────────────────────────────────────────────────────
-export const ZoomedGauge = ({ station, data, onClose }) => {
+// ─── NEAT QUICK-INFO POPUP (Simple Mode) ────────────────────────────────────
+export const SimpleZoomedGauge = ({ station, data, onClose }) => {
   const cfg = getIMDConfigByKey(data?.imdLevel || 'no_rain');
   return (
     <AnimatePresence>
@@ -248,14 +246,85 @@ export const ZoomedGauge = ({ station, data, onClose }) => {
         <>
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="overlay"
+            className="overlay z-[205]"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            className="fixed inset-0 flex items-center justify-center z-[210] pointer-events-none p-6"
+          >
+            <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] w-full max-w-sm pointer-events-auto relative overflow-hidden border border-slate-200 p-8">
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 p-1.5 hover:bg-slate-100 rounded-full text-slate-400 transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex flex-col items-center text-center gap-6">
+                <div 
+                  className="w-16 h-1 rounded-full" 
+                  style={{ backgroundColor: station.markerColor || cfg.color }} 
+                />
+                
+                <div>
+                  <h3 className="text-lg font-black text-academic-blue uppercase font-serif mb-1 leading-tight">
+                    {station.name}
+                  </h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    STATION NODE {station.stationNo}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 w-full border-y border-slate-50 py-6">
+                   <div className="flex flex-col gap-1">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hourly</span>
+                      <div className="text-xl font-black text-slate-800 tabular-nums">
+                        {(data?.hourlyIntensity ?? 0).toFixed(1)}<span className="text-[10px] ml-1 opacity-40">mm/h</span>
+                      </div>
+                   </div>
+                   <div className="flex flex-col gap-1">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total</span>
+                      <div className="text-xl font-black text-blue-600 tabular-nums">
+                        {(data?.dailyCumulative ?? 0).toFixed(1)}<span className="text-[10px] ml-1 opacity-40">mm</span>
+                      </div>
+                   </div>
+                </div>
+
+                <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-full border border-slate-100">
+                   <Activity className="w-4 h-4" style={{ color: cfg.color }} />
+                   <span className="text-xs font-black uppercase tracking-widest" style={{ color: cfg.color }}>
+                     {cfg.label} Rainfall
+                   </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// ─── TECHNICAL ANALYTICS MODAL (Detailed Mode) ──────────────────────────────
+export const DetailedAnalyticsModal = ({ station, data, onClose }) => {
+  const cfg = getIMDConfigByKey(data?.imdLevel || 'no_rain');
+  return (
+    <AnimatePresence>
+      {station && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="overlay z-[215]"
             onClick={onClose}
           />
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center z-[210] pointer-events-none p-4 md:p-8"
+            className="fixed inset-0 flex items-center justify-center z-[220] pointer-events-none p-4 md:p-8"
           >
             <div className="bg-white rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(30,58,138,0.25)] w-full max-w-5xl pointer-events-auto relative overflow-hidden flex flex-col md:flex-row border border-slate-200"
               style={{ maxHeight: 'calc(100vh - 80px)' }}

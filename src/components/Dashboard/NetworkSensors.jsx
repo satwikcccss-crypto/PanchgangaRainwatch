@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Battery, Signal, Info, Droplets, Globe, Clock, ShieldAlert, Radio } from 'lucide-react';
+import { exportTechnicalData } from '../../services/exportService';
 import { STATIONS } from '../../config/stations';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
 import MeteoGauge from './MeteoGauge';
 
-const GaugeCard = ({ station, data, index, onStationClick }) => {
+const GaugeCard = ({ station, data, index, onViewAnalytics }) => {
   const cfg = getIMDConfigByKey(data?.imdLevel || 'no_rain');
   const current = data?.dailyCumulative ?? 0;
   const intensity = data?.hourlyIntensity ?? 0;
@@ -89,7 +90,7 @@ const GaugeCard = ({ station, data, index, onStationClick }) => {
 
       {/* Action Button */}
       <button
-        onClick={() => onStationClick?.(station.id)}
+        onClick={() => onViewAnalytics?.(station)}
         className="mt-6 w-full py-3 bg-white border border-slate-200 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] text-slate-400 hover:bg-academic-blue hover:text-white hover:border-academic-blue transition-all shadow-sm"
       >
         View Analytics
@@ -98,7 +99,8 @@ const GaugeCard = ({ station, data, index, onStationClick }) => {
   );
 };
 
-const NetworkSensors = ({ stationData = {}, onStationClick }) => {
+
+const NetworkSensors = ({ stationData = {}, onViewAnalytics }) => {
   const dataArray = Object.values(stationData || {});
   
   // Calculations for summary metrics (safe defaults)
@@ -113,6 +115,26 @@ const NetworkSensors = ({ stationData = {}, onStationClick }) => {
 
   return (
     <div className="mb-12">
+      {/* Network Controls Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6">
+        <div>
+           <h2 className="text-xl font-bold font-serif text-academic-blue uppercase tracking-tight flex items-center gap-2">
+             <Activity className="w-6 h-6" /> Telemetry Network Analysis
+           </h2>
+           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+             RTDAS Sensor Grid · IS-Standards · 24/7 Monitoring
+           </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={() => exportTechnicalData(stationData)}
+            className="px-6 py-2.5 bg-academic-blue text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2 shadow-sm border border-white/20"
+          >
+            <Globe className="w-4 h-4 text-academic-gold" /> Technical Archiving (.xls)
+          </button>
+        </div>
+      </div>
+
       {/* Summary Bar */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="glass-light rounded-3xl p-6 border border-slate-200/50">
@@ -153,7 +175,7 @@ const NetworkSensors = ({ stationData = {}, onStationClick }) => {
             station={station} 
             data={stationData[station.id]} 
             index={i} 
-            onStationClick={onStationClick}
+            onViewAnalytics={onViewAnalytics}
           />
         ))}
       </div>
