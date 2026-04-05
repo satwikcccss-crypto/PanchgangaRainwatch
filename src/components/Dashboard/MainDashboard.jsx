@@ -304,7 +304,9 @@ const MainDashboard = () => {
               transition={{ duration: 0.3 }}
               className="mt-6"
             >
-              <NetworkSensors stationData={stationData} />
+              <ErrorBoundary label="Sensor Network View">
+                <NetworkSensors stationData={stationData} />
+              </ErrorBoundary>
             </motion.div>
           )}
         </AnimatePresence>

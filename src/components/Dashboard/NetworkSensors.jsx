@@ -95,14 +95,18 @@ const GaugeCard = ({ station, data, index }) => {
   );
 };
 
-const NetworkSensors = ({ stationData }) => {
-  // Calculations for summary metrics
-  const totalRain = Object.values(stationData).reduce((sum, d) => sum + (d?.dailyCumulative ?? 0), 0);
-  const activeCount = Object.values(stationData).filter(d => d?.status === 'active').length;
+const NetworkSensors = ({ stationData = {} }) => {
+  const dataArray = Object.values(stationData || {});
+  
+  // Calculations for summary metrics (safe defaults)
+  const totalRain = dataArray.reduce((sum, d) => sum + (d?.dailyCumulative ?? 0), 0);
+  const activeCount = dataArray.filter(d => d?.status === 'active').length;
   const avgIntensity = activeCount > 0 
-    ? Object.values(stationData).reduce((sum, d) => sum + (d?.hourlyIntensity ?? 0), 0) / activeCount 
+    ? dataArray.reduce((sum, d) => sum + (d?.hourlyIntensity ?? 0), 0) / activeCount 
     : 0;
-  const maxRain = Math.max(...Object.values(stationData).map(d => d?.dailyCumulative ?? 0), 0);
+  
+  const rawMax = dataArray.map(d => d?.dailyCumulative ?? 0);
+  const maxRain = rawMax.length > 0 ? Math.max(...rawMax) : 0;
 
   return (
     <div className="mb-12">
