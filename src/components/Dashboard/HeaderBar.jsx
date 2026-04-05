@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Info, Clock, Wifi, WifiOff, CloudRain, Type } from 'lucide-react';
 
-const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick }) => {
+const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick, activeView, onViewChange }) => {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick }) => {
   };
 
   return (
-    <header className="inst-header">
+    <header className="inst-header flex-col lg:flex-row gap-6 py-5">
       {/* Left — Logo + Title */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-4 border-r border-slate-200 pr-6 mr-2">
@@ -42,28 +42,36 @@ const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick }) => {
             </h2>
           </div>
         </div>
+      </div>
 
-        {/* IMD badge */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
-          <CloudRain className="w-4 h-4 text-blue-600" />
-          <span className="text-[10px] font-bold text-blue-700 uppercase tracking-widest">
-            IMD Classified
-          </span>
-        </div>
+      {/* Center — Navigation Tabs */}
+      <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200/50 shadow-inner overflow-hidden">
+        <button
+          onClick={() => onViewChange('home')}
+          className={`px-8 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2 ${
+            activeView === 'home' 
+              ? 'bg-academic-blue text-white shadow-lg' 
+              : 'text-slate-500 hover:bg-slate-200'
+          }`}
+        >
+          <CloudRain className="w-3.5 h-3.5" />
+          Dashboard
+        </button>
+        <button
+          onClick={() => onViewChange('network')}
+          className={`px-8 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2 ${
+            activeView === 'network' 
+              ? 'bg-academic-blue text-white shadow-lg' 
+              : 'text-slate-500 hover:bg-slate-200'
+          }`}
+        >
+          <Wifi className="w-3.5 h-3.5" />
+          Sensor Network
+        </button>
       </div>
 
       {/* Right — clock + status + about */}
       <div className="hidden xl:flex items-center gap-6">
-        <div className="flex items-center gap-2 mr-4">
-          <button
-            onClick={toggleFontSize}
-            className="flex items-center gap-1 px-2 py-1.5 border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-academic-blue rounded font-bold text-[10px] uppercase transition-all"
-            title="Toggle Text Size"
-          >
-            <Type className="w-3 h-3" /> A±
-          </button>
-        </div>
-
         <div className="flex flex-col items-end">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-academic-blue" />

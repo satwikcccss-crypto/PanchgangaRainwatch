@@ -168,6 +168,7 @@ const MainDashboard = () => {
   const [zoomedStation,   setZoomedStation]   = useState(null);
   const [isAboutOpen,     setIsAboutOpen]     = useState(false);
   const [shuffledStations, setShuffledStations] = useState(STATIONS);
+  const [activeView,      setActiveView]      = useState('home'); // 'home' | 'network'
 
   // Keep selected station first in the right-column list
   useEffect(() => {
@@ -205,107 +206,108 @@ const MainDashboard = () => {
   return (
     <div className="min-h-screen flex flex-col pt-8">
       <div className="max-w-[1600px] w-full mx-auto px-4 lg:px-8 flex-grow pb-8">
-
+        
         <HeaderBar
           connectionStatus={loading ? 'offline' : 'online'}
           lastUpdateTime={lastUpdate}
           onAboutClick={() => setIsAboutOpen(true)}
+          activeView={activeView}
+          onViewChange={setActiveView}
         />
 
-        {/* Network alert banner */}
-        <AlertBanner imdLevelKey={networkAlertKey} />
+        {/* ── View Switcher Content ── */}
+        <AnimatePresence mode="wait">
+          {activeView === 'home' ? (
+            <motion.div
+              key="home"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6 mt-4"
+            >
+              <AlertBanner imdLevelKey={networkAlertKey} />
+              
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                {/* Left Column (Map/Chart) */}
+                <div className="xl:col-span-8 space-y-6">
+                  <div className="academic-panel p-6 group">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-5 gap-4">
+                      <div>
+                        <h3 className="text-base font-bold font-serif text-academic-blue uppercase tracking-tight flex items-center gap-2">
+                          <Activity className="w-5 h-5 group-hover:animate-pulse" />
+                          Rainfall Intensity Time-Series
+                        </h3>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {STATIONS.map(s => (
+                          <button
+                            key={s.id}
+                            onClick={() => setSelectedId(s.id)}
+                            className={`auth-button ${selectedId === s.id ? 'active' : ''}`}
+                          >
+                            {s.shortName}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="h-[300px]">
+                      <ErrorBoundary label="Rainfall Intensity Chart">
+                        <RainfallChart
+                          stationData={stationData[selectedId]}
+                          stationName={selectedStation?.name}
+                        />
+                      </ErrorBoundary>
+                    </div>
+                  </div>
 
-        {/* New Sensor Network Section */}
-        <NetworkSensors
-          stationData={stationData}
-        />
-
-        {/* ── Main Grid ── */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-4">
-
-          {/* Left Column */}
-          <div className="xl:col-span-8 space-y-6">
-
-            {/* Time-series chart */}
-            <div className="academic-panel p-6 group">
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-5 gap-4">
-                <div>
-                  <h3 className="text-base font-bold font-serif text-academic-blue uppercase tracking-tight flex items-center gap-2">
-                    <Activity className="w-5 h-5 group-hover:animate-pulse" />
-                    Rainfall Intensity Time-Series
-                  </h3>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                    IMD-classified · Bar = mm/hr · Line = cumulative mm · 60-second refresh
-                  </p>
+                  <div className="h-[440px]">
+                    <ErrorBoundary label="Interactive Map">
+                      <InteractiveMap
+                        stationData={stationData}
+                        selectedStation={selectedId}
+                        onStationClick={(id) => {
+                          setSelectedId(id);
+                          setZoomedStation(STATIONS.find(s => s.id === id));
+                        }}
+                      />
+                    </ErrorBoundary>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {STATIONS.map(s => (
-                    <button
-                      key={s.id}
-                      onClick={() => setSelectedId(s.id)}
-                      className={`auth-button ${selectedId === s.id ? 'active' : ''}`}
-                    >
-                      {s.shortName}
-                    </button>
-                  ))}
+
+                {/* Right Column (Gauges) */}
+                <div className="xl:col-span-4 space-y-4">
+                  <div className="flex flex-col gap-3">
+                    {shuffledStations.map(s => (
+                      <SimpleRainIndicator
+                        key={s.id}
+                        station={s}
+                        data={stationData[s.id]}
+                        active={selectedId === s.id}
+                        onClick={() => {
+                          setSelectedId(s.id);
+                          setZoomedStation(s);
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <QRRegistration />
                 </div>
               </div>
-              <div className="h-[300px]">
-                <ErrorBoundary label="Rainfall Intensity Chart">
-                  <RainfallChart
-                    stationData={stationData[selectedId]}
-                    stationName={selectedStation?.name}
-                  />
-                </ErrorBoundary>
-              </div>
-            </div>
-
-            {/* Interactive Map */}
-            <div className="h-[440px]">
-              <ErrorBoundary label="Interactive Map">
-                <InteractiveMap
-                  stationData={stationData}
-                  selectedStation={selectedId}
-                  onStationClick={(id) => {
-                    setSelectedId(id);
-                    setZoomedStation(STATIONS.find(s => s.id === id));
-                  }}
-                />
-              </ErrorBoundary>
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="xl:col-span-4 space-y-4">
-            <div className="flex items-center justify-between px-1 mb-1">
-              <h3 className="text-xs font-bold font-serif text-academic-blue uppercase tracking-widest">
-                Live Station Gauges
-              </h3>
-              <div className="text-[8px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-100 px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> RTDAS
-              </div>
-            </div>
-
-            {/* Compact station list */}
-            <div className="flex flex-col gap-3">
-              {shuffledStations.map(s => (
-                <SimpleRainIndicator
-                  key={s.id}
-                  station={s}
-                  data={stationData[s.id]}
-                  active={selectedId === s.id}
-                  onClick={() => {
-                    setSelectedId(s.id);
-                    setZoomedStation(s);
-                  }}
-                />
-              ))}
-            </div>
-
-            <QRRegistration />
-          </div>
-        </div>
-
+            </motion.div>
+          ) : (
+            <motion.div
+              key="network"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="mt-6"
+            >
+              <NetworkSensors stationData={stationData} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <DisclaimerFooter />
