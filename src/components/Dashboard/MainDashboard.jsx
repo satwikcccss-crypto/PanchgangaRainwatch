@@ -11,7 +11,6 @@ import QRRegistration from '../Alerts/QRRegistration';
 import InteractiveMap from '../Map/InteractiveMap';
 import { RainGaugeWidget, SimpleRainIndicator, ZoomedGauge } from '../RainGauge/RainGaugeWidget';
 import RainfallChart from '../Charts/RainfallChart';
-import MainFooter from './MainFooter';
 import { fetchAllStations } from '../../services/thingspeakAPI';
 import { STATIONS, POLL_INTERVAL_MS } from '../../config/stations';
 import { getNetworkAlertLevel } from '../../config/imdThresholds';
@@ -144,8 +143,20 @@ const InfoPanel = ({ isOpen, onClose }) => (
   </AnimatePresence>
 );
 
-/* ─── Disclaimer Footer (Deprecated in favour of MainFooter) ───────────────── */
-const DisclaimerFooter = () => null;
+/* ─── Disclaimer Footer ────────────────────────────────────────────────── */
+const DisclaimerFooter = () => (
+  <div className="border-t border-slate-200 bg-amber-50/60 px-4 lg:px-8 py-3 text-center">
+    <p className="text-[10px] text-amber-800 font-medium leading-relaxed max-w-5xl mx-auto">
+      <strong>⚠ Academic Disclaimer:</strong> This dashboard is developed by CCCSS, Shivaji University Kolhapur
+      and is under active development. Data is academic and research-derived — for awareness purposes only.
+      Official emergency decisions must rely on IMD / WRD / CWC sources.
+      Site &amp; data ownership: <strong>CCCSS, Shivaji University, Kolhapur</strong>. |{' '}
+      <span className="text-amber-700 font-bold">
+        Demo data shown until ThingSpeak channels are configured.
+      </span>
+    </p>
+  </div>
+);
 
 /* ─── Main Dashboard ───────────────────────────────────────────────────── */
 const MainDashboard = () => {
@@ -293,35 +304,30 @@ const MainDashboard = () => {
         </div>
 
         {/* ── Telemetry Status Row ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-8 pb-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-8 pb-4">
           {[
             { icon: <Activity className="w-3.5 h-3.5 text-blue-600" />, label: 'Active Nodes', value: `0${STATIONS.length} of 0${STATIONS.length}` },
             { icon: <Globe    className="w-3.5 h-3.5 text-emerald-600" />, label: 'Gateway', value: 'SU-RTDAS-RG-01' },
             { icon: <Clock    className="w-3.5 h-3.5 text-amber-600" />, label: 'Latency', value: '< 1500 ms' },
-            { icon: <ShieldAlert className="w-3.5 h-3.5 text-blue-600" />, label: 'Protocol', value: 'TLS 1.3 / AES' },
+            { icon: <ShieldAlert className="w-3.5 h-3.5 text-blue-600" />, label: 'Protocol', value: 'TLS 1.3 / AES', hidden: true },
             { icon: <Radio    className="w-3.5 h-3.5 text-indigo-600" />, label: 'Uplink', value: 'ThingSpeak API' },
-            { icon: <Droplets className="w-3.5 h-3.5 text-cyan-600" />, label: 'Sampling Rate', value: '60 Seconds' },
-          ].map(({ icon, label, value }) => (
+          ].map(({ icon, label, value, hidden }) => (
             <div
               key={label}
-              className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow group overflow-hidden"
+              className={`bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow ${hidden ? 'max-lg:hidden' : ''}`}
             >
               <div className="flex items-center gap-2 mb-1">
                 {icon}
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{label}</span>
               </div>
               <div className="text-[13px] font-mono font-bold text-slate-800 truncate">{value}</div>
-              {/* Subtle tech background decoration */}
-              <div className="absolute -bottom-2 -right-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                {React.cloneElement(icon, { size: 36, strokeWidth: 1 })}
-              </div>
             </div>
           ))}
         </div>
 
       </div>
 
-      <MainFooter />
+      <DisclaimerFooter />
 
       {/* Modals */}
       <InfoPanel isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
