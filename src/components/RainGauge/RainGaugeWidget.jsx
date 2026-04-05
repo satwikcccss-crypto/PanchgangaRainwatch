@@ -200,36 +200,31 @@ export const SimpleRainIndicator = ({ station, data, active, onClick }) => {
       
       {/* Header */}
       <div className="flex justify-between items-start">
-        <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] leading-tight pr-2">
+        <h4 className="text-[9px] font-bold font-serif text-slate-500 uppercase tracking-[0.2em] leading-tight pr-2">
           {station.name.toUpperCase()}
         </h4>
-        <Activity className="w-3.5 h-3.5 opacity-20" style={{ color: cfg.color }} />
       </div>
 
       {/* Value & Trend */}
       <div className="mt-1">
         <div className="flex items-baseline gap-1.5">
-          <span className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">
+          <span className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter font-mono">
             {cumulative.toFixed(2)}
           </span>
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">MM</span>
         </div>
-        <div className="flex items-center gap-1 mt-0.5">
-          {isRising ? (
-            <TrendingUp className="w-3 h-3 text-emerald-500" />
-          ) : (
-            <Minus className="w-3 h-3 text-slate-300" />
-          )}
+        <div className="flex items-center gap-1.5 mt-0.5">
           <span className={`text-[8px] font-black uppercase tracking-widest ${isRising ? 'text-emerald-500' : 'text-slate-400'}`}>
             {isRising ? 'RISING' : 'STABLE'}
           </span>
+          {isRising && <TrendingUp className="w-3 h-3 text-emerald-500" />}
         </div>
       </div>
 
       {/* Footer */}
       <div className="flex justify-between items-end">
         <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">TELEMETRY</span>
-        <div className="text-[9px] font-black uppercase tracking-tight py-0.5 px-2 rounded-full bg-slate-50 border border-slate-100" style={{ color: cfg.color }}>
+        <div className="text-[9px] font-black uppercase tracking-widest py-0.5 px-2 rounded-full bg-slate-50 border border-slate-100" style={{ color: cfg.color }}>
           {cfg.label}
         </div>
       </div>

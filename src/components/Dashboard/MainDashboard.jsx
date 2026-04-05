@@ -15,7 +15,6 @@ import ErrorBoundary from './ErrorBoundary';
 import { fetchAllStations } from '../../services/thingspeakAPI';
 import { STATIONS, POLL_INTERVAL_MS } from '../../config/stations';
 import { getNetworkAlertLevel } from '../../config/imdThresholds';
-import { exportTechnicalData } from '../../services/exportService';
 import InteractiveMap from '../Map/InteractiveMap';
 
 /* ─── Project Info Sidebar ─────────────────────────────────────────────── */
@@ -224,47 +223,6 @@ const MainDashboard = () => {
             <div className="space-y-6">
               <AlertBanner imdLevelKey={networkAlertKey} />
               
-              {/* Basin Intelligence Summary (Restored from Floodwatch Standard) */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
-                {[
-                  { 
-                    label: 'Basin Accumulation', 
-                    val: Object.values(stationData).reduce((s, d) => s + (d?.dailyCumulative ?? 0), 0).toFixed(1),
-                    unit: 'MM TODAY',
-                    icon: <Droplets className="w-4 h-4 text-blue-500" />
-                  },
-                  { 
-                    label: 'Network Intensity', 
-                    val: (Object.values(stationData).reduce((s, d) => s + (d?.hourlyIntensity ?? 0), 0) / STATIONS.length).toFixed(2),
-                    unit: 'MM/HR AVG',
-                    icon: <Activity className="w-4 h-4 text-emerald-500" />
-                  },
-                  { 
-                    label: 'Operational Nodes', 
-                    val: `0${Object.values(stationData).filter(d => d?.status === 'active').length}`,
-                    unit: 'OF 05 ACTIVE',
-                    icon: <Radio className="w-4 h-4 text-amber-500" />
-                  },
-                  { 
-                    label: 'Sync Status', 
-                    val: 'LIVE',
-                    unit: 'RTDAS CLOUD',
-                    icon: <Globe className="w-4 h-4 text-academic-blue" />
-                  }
-                ].map((stat, i) => (
-                  <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col justify-center shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                      {stat.icon}
-                    </div>
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</span>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-slate-800 tabular-nums tracking-tighter">{stat.val}</span>
-                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{stat.unit}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
               {/* Station summary cards (Floodwatch Plates) */}
               <StatsOverview 
                 stationData={stationData}
@@ -348,15 +306,7 @@ const MainDashboard = () => {
                     ))}
                   </div>
 
-                  {/* Technical Export */}
-                  <div className="academic-panel p-5 bg-slate-50 border-slate-200 mt-4">
-                    <button
-                      onClick={() => exportTechnicalData(stationData)}
-                      className="w-full bg-academic-blue text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-2 shadow-sm"
-                    >
-                      <Globe className="w-4 h-4 text-academic-gold" /> Export IS-Standard Records (.xls)
-                    </button>
-                  </div>
+                  {/* Technical Export Utility removed as per request */}
                   
                   <QRRegistration />
                 </div>

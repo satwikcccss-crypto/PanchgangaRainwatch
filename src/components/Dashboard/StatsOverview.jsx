@@ -26,50 +26,40 @@ const StatCard = ({ station, data, index, onClick, isSelected }) => {
         style={{ backgroundColor: station.markerColor || cfg.color }}
       />
 
-      {/* Top Header & Icon */}
+      {/* Top Header */}
       <div className="flex justify-between items-start">
-        <div className="flex-1 pr-4">
-          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-tight mb-1">
+        <div className="flex-1">
+          <h4 className="text-[10px] font-serif font-bold text-slate-500 uppercase tracking-[0.2em] leading-tight mb-1">
             {station.name.toUpperCase()}
           </h4>
-        </div>
-        <div className="flex-shrink-0 opacity-20">
-           <Droplets className="w-5 h-5" style={{ color: cfg.color }} />
         </div>
       </div>
 
       {/* Main Reading (Floodwatch Style) */}
-      <div className="flex flex-col mt-2">
+      <div className="flex flex-col mt-3">
         <div className="flex items-baseline gap-2">
-          <span className="text-4xl font-black text-slate-800 tracking-tighter tabular-nums">
+          <span className="text-4xl font-black text-slate-800 tracking-tighter tabular-nums font-mono">
             {cumulative.toFixed(2)}
           </span>
-          <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">MM</span>
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">MM</span>
         </div>
         
         {/* Trend Indicator */}
         <div className="flex items-center gap-1.5 mt-1">
-          {isRising ? (
-            <>
-              <TrendingUp className="w-4 h-4 text-emerald-500" />
-              <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">RISING</span>
-            </>
-          ) : (
-            <>
-              <Minus className="w-4 h-4 text-slate-300" />
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">STABLE</span>
-            </>
-          )}
+           <span className={`text-[10px] font-black uppercase tracking-widest ${isRising ? 'text-emerald-500' : 'text-slate-400'}`}>
+            {isRising ? 'RISING' : 'STABLE'}
+          </span>
+          {isRising && <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />}
         </div>
       </div>
 
       {/* Reference Footer */}
       <div className="flex justify-between items-end mt-4">
-        <div className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter bg-slate-100 px-2 py-0.5 rounded">
-          IST REF
+        <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+           IST REF
         </div>
-        <div className={`text-[10px] font-black uppercase tracking-widest py-0.5 px-2 rounded-full border ${isSelected ? 'bg-white border-slate-200' : 'bg-slate-50 border-transparent'}`} style={{ color: cfg.color }}>
-          {cfg.label}
+        <div className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-slate-100 bg-slate-50" style={{ color: cfg.color }}>
+           {cfg.label}
         </div>
       </div>
     </motion.div>

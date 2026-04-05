@@ -35,7 +35,7 @@ const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick, activeView,
             <h1 className="text-xl lg:text-2xl font-bold font-serif text-academic-blue tracking-tight leading-snug max-w-md">
               Realtime Rain Gauge Monitoring System
               <br />
-              <span className="text-lg lg:text-xl">Panchganga Basin, Kolhapur</span>
+              <span className="text-lg lg:text-xl">Panchganga Basin</span>
             </h1>
             <h2 className="text-[9px] lg:text-[10px] font-bold text-academic-gold uppercase tracking-[0.2em] mt-1.5 opacity-90">
               Developed by: Centre for Climate Change and Sustainability Studies (CCCSS)

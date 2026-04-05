@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Battery, Signal, Info, Droplets, Globe, Clock, ShieldAlert, Radio } from 'lucide-react';
-import { exportTechnicalData } from '../../services/exportService';
 import { STATIONS } from '../../config/stations';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
 import MeteoGauge from './MeteoGauge';
@@ -126,12 +125,7 @@ const NetworkSensors = ({ stationData = {}, onViewAnalytics }) => {
            </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => exportTechnicalData(stationData)}
-            className="px-6 py-2.5 bg-academic-blue text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2 shadow-sm border border-white/20"
-          >
-            <Globe className="w-4 h-4 text-academic-gold" /> Technical Archiving (.xls)
-          </button>
+          {/* Export utility removed as per request */}
         </div>
       </div>
 
