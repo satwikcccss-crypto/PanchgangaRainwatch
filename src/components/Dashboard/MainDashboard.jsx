@@ -16,6 +16,7 @@ import { fetchAllStations } from '../../services/thingspeakAPI';
 import { STATIONS, POLL_INTERVAL_MS } from '../../config/stations';
 import { getNetworkAlertLevel } from '../../config/imdThresholds';
 import { exportTechnicalData } from '../../services/exportService';
+import InteractiveMap from '../Map/InteractiveMap';
 
 /* ─── Project Info Sidebar ─────────────────────────────────────────────── */
 const InfoPanel = ({ isOpen, onClose }) => (
@@ -374,7 +375,7 @@ const MainDashboard = () => {
         </div>
       </div>
 
-      <StatsOverviewFooter />
+      <DisclaimerFooter />
 
       {/* Modals Selection Logic */}
       <InfoPanel isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />

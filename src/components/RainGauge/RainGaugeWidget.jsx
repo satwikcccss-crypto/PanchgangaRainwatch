@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Droplets, CloudRain, Zap, Activity, Globe, MapPin, Clock } from 'lucide-react';
+import { X, Droplets, CloudRain, Zap, Activity, Globe, MapPin, Clock, TrendingUp, Minus } from 'lucide-react';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
 import MeteoGauge from '../Dashboard/MeteoGauge';
 import RainfallChart from '../Charts/RainfallChart';
