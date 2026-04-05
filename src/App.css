@@ -1,0 +1,6 @@
+/* App-level overrides — main styles live in index.css */
+.text-academic-blue { color: var(--su-academic-blue); }
+.text-academic-gold { color: var(--su-academic-gold); }
+.bg-academic-blue   { background-color: var(--su-academic-blue); }
+.bg-cream           { background-color: var(--bg-cream); }
+.border-academic-blue { border-color: var(--su-academic-blue); }
