@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap, LayersControl } from 'react-leaflet';
 import { motion } from 'framer-motion';
-import { Map as MapIcon, Radio, Pause, Play } from 'lucide-react';
+import { Map as MapIcon } from 'lucide-react';
 import { STATIONS } from '../../config/stations';
 import { MAP_CONFIG } from '../../config/mapConfig';
 import { getIMDConfigByKey } from '../../config/imdThresholds';
@@ -12,7 +12,7 @@ const { BaseLayer } = LayersControl;
 
 const FlyToStation = ({ selectedId }) => {
   const map = useMap();
-  useEffect(() => {
+  React.useEffect(() => {
     if (!selectedId) return;
     const s = STATIONS.find(s => s.id === selectedId);
     if (s) map.flyTo([s.location.lat, s.location.lng], 13, { duration: 1.2 });
@@ -20,62 +20,8 @@ const FlyToStation = ({ selectedId }) => {
   return null;
 };
 
-// ─── Rain Radar Animation Logic ─────────────────────────────────────────────
-const RainRadarTile = ({ isPlaying, onTimeUpdate }) => {
-  const [timestamps, setTimestamps] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    fetch('https://api.rainviewer.com/public/weather-maps.json')
-      .then(res => res.json())
-      .then(data => {
-        const times = data.radar.past.map(r => r.time);
-        setTimestamps(times);
-        setCurrentIndex(times.length - 1);
-        onTimeUpdate(times[times.length - 1]);
-      })
-      .catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    if (!isPlaying || timestamps.length === 0) return;
-    const timer = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % timestamps.length);
-    }, 1200); // 1.2s per frame
-    return () => clearInterval(timer);
-  }, [isPlaying, timestamps]);
-
-  // Sync radar frame time safely with parent InteractiveMap outside of pure state updaters
-  useEffect(() => {
-    if (timestamps.length > 0) {
-      onTimeUpdate(timestamps[currentIndex]);
-    }
-  }, [currentIndex, timestamps, onTimeUpdate]);
-
-  if (timestamps.length === 0) return null;
-  const currentTs = timestamps[currentIndex];
-
-  return (
-    <TileLayer
-      key={`radar-${currentTs}`}
-      url={`https://tilecache.rainviewer.com/v2/radar/${currentTs}/256/{z}/{x}/{y}/2/1_1.png`}
-      opacity={0.65}
-      zIndex={100} // Always above base layers
-      attribution="&copy; RainViewer"
-    />
-  );
-};
-
 // ─── Main Map Component ─────────────────────────────────────────────────────
 const InteractiveMap = ({ stationData, selectedId, onStationClick }) => {
-  const [showRadar, setShowRadar] = useState(true);
-  const [radarPlaying, setRadarPlaying] = useState(true);
-  const [radarTime, setRadarTime] = useState(null);
-
-  const radarTimeStr = radarTime 
-    ? new Date(radarTime * 1000).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })
-    : '--:--';
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -91,60 +37,25 @@ const InteractiveMap = ({ stationData, selectedId, onStationClick }) => {
               Panchganga Basin — Spatial Monitoring
             </h2>
             <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
-              Live Station Markers & Regional Rain Radar
+              Live Station Markers
             </p>
           </div>
         </div>
         
-        {/* Radar Toggle Control */}
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setShowRadar(!showRadar)}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${showRadar ? 'bg-indigo-600 text-white shadow-md' : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'}`}
-          >
-            <Radio className={`w-3.5 h-3.5 ${showRadar ? 'animate-pulse' : ''}`} />
-            {showRadar ? 'Live Radar Active' : 'Enable Radar'}
-          </button>
-
-          <div className="hidden md:flex items-center gap-2 border-l border-slate-200 pl-4">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
-              {STATIONS.length} Active Nodes
-            </span>
-          </div>
+        <div className="hidden md:flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+            {STATIONS.length} Active Nodes
+          </span>
         </div>
       </div>
 
       <div className="relative flex-1 min-h-[350px]">
-        {/* Radar Time Control Floating Panel */}
-        {showRadar && radarTime && (
-          <div className="absolute top-4 right-[60px] z-[1000] bg-white/95 backdrop-blur border border-slate-200 p-2.5 rounded-xl shadow-lg flex items-center gap-4">
-             <button
-                onClick={() => setRadarPlaying(!radarPlaying)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition-colors"
-                title={radarPlaying ? "Pause Animation" : "Play Animation"}
-              >
-                {radarPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
-             </button>
-             <div className="pr-2">
-               <div className="text-[7px] font-black text-indigo-500 uppercase tracking-[0.2em] mb-0.5">Radar Frame Time</div>
-               <div className="text-sm font-black font-mono text-slate-800 leading-none">{radarTimeStr}</div>
-             </div>
-          </div>
-        )}
-
         <MapContainer
           center={MAP_CONFIG.defaultCenter}
           zoom={MAP_CONFIG.defaultZoom}
           className="h-full w-full z-10"
         >
-          {showRadar && (
-             <RainRadarTile 
-               isPlaying={radarPlaying} 
-               onTimeUpdate={setRadarTime} 
-             />
-          )}
-
           <LayersControl position="topright">
             <BaseLayer name="OpenStreetMap">
               <TileLayer
