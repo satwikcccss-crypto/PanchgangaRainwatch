@@ -59,7 +59,6 @@ const RainRadarTile = ({ isPlaying, onTimeUpdate }) => {
       opacity={0.65}
       zIndex={100} // Always above base layers
       attribution="&copy; RainViewer"
-      maxNativeZoom={12}
     />
   );
 };
