@@ -8,7 +8,7 @@ import HeaderBar from './HeaderBar';
 import NetworkSensors from './NetworkSensors';
 import AlertBanner from '../Alerts/AlertBanner';
 import QRRegistration from '../Alerts/QRRegistration';
-import { SimpleZoomedGauge, SimpleRainIndicator, DetailedAnalyticsModal } from '../RainGauge/RainGaugeWidget';
+import { SimpleRainIndicator, DetailedAnalyticsModal, QuickRainWidgetModal } from '../RainGauge/RainGaugeWidget';
 import RainfallChart from '../Charts/RainfallChart';
 import StatsOverview from './StatsOverview';
 import ErrorBoundary from './ErrorBoundary';
@@ -162,14 +162,16 @@ const DisclaimerFooter = () => (
 
 /* ─── Main Dashboard ───────────────────────────────────────────────────── */
 const MainDashboard = () => {
-  const [stationData,     setStationData]     = useState({});
+  const [stationData,     setStationData]     = useState(
+    STATIONS.reduce((acc, s) => ({ ...acc, [s.id]: { hourlyIntensity: 0, dailyCumulative: 0 } }), {})
+  );
   const [loading,         setLoading]         = useState(true);
   const [lastUpdate,      setLastUpdate]      = useState(null);
   const [selectedId,      setSelectedId]      = useState(STATIONS[0].id);
-  const [zoomedStation,   setZoomedStation]   = useState(null);
   const [isAboutOpen,     setIsAboutOpen]     = useState(false);
   const [shuffledStations, setShuffledStations] = useState(STATIONS);
   const [detailedStation, setDetailedStation] = useState(null);
+  const [quickStation,    setQuickStation]    = useState(null);
   const [activeView,      setActiveView]      = useState('home'); // 'home' | 'network'
 
   // Keep selected station first in the right-column list
@@ -229,7 +231,7 @@ const MainDashboard = () => {
                 selectedId={selectedId}
                 onStationClick={(id) => {
                   setSelectedId(id);
-                  setZoomedStation(STATIONS.find(s => s.id === id));
+                  setQuickStation(STATIONS.find(s => s.id === id));
                 }}
               />
 
@@ -273,7 +275,7 @@ const MainDashboard = () => {
                         selectedId={selectedId}
                         onStationClick={(id) => {
                           setSelectedId(id);
-                          setZoomedStation(STATIONS.find(s => s.id === id));
+                          setQuickStation(STATIONS.find(s => s.id === id));
                         }}
                       />
                     </ErrorBoundary>
@@ -300,7 +302,7 @@ const MainDashboard = () => {
                         active={selectedId === s.id}
                         onClick={() => {
                           setSelectedId(s.id);
-                          setZoomedStation(s);
+                          setDetailedStation(s);
                         }}
                       />
                     ))}
@@ -327,20 +329,24 @@ const MainDashboard = () => {
 
       <DisclaimerFooter />
 
-      {/* Modals Selection Logic */}
+      {/* Modals Selection Logic (Defensive Hydration) */}
       <InfoPanel isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
       
-      <SimpleZoomedGauge
-        station={zoomedStation}
-        data={zoomedStation ? stationData[zoomedStation.id] : null}
-        onClose={() => setZoomedStation(null)}
-      />
+      {quickStation && (
+        <QuickRainWidgetModal
+          station={quickStation}
+          data={stationData?.[quickStation.id] || null}
+          onClose={() => setQuickStation(null)}
+        />
+      )}
 
-      <DetailedAnalyticsModal
-        station={detailedStation}
-        data={detailedStation ? stationData[detailedStation.id] : null}
-        onClose={() => setDetailedStation(null)}
-      />
+      {detailedStation && (
+        <DetailedAnalyticsModal
+          station={detailedStation}
+          data={stationData?.[detailedStation.id] || null}
+          onClose={() => setDetailedStation(null)}
+        />
+      )}
     </div>
   );
 };

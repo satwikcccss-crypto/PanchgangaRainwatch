@@ -130,46 +130,6 @@ const InteractiveMap = ({ stationData, selectedId, onStationClick }) => {
                     </div>
                   </div>
                 </Tooltip>
-
-                <Popup maxWidth={320} className="rtdas-map-popup">
-                  <div className="p-2 min-w-[280px]">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase block mb-1 font-sans">
-                          {station.authority} · RG-{station.stationNo}
-                        </span>
-                        <h3 className="text-base font-black text-academic-blue leading-tight uppercase font-serif">
-                          {station.name}
-                        </h3>
-                      </div>
-                      <div className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${isMock ? 'bg-amber-50 text-amber-600 border border-amber-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`}>
-                        {isMock ? 'Demo' : 'Live'}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 items-center">
-                      <div className="flex flex-col items-center bg-slate-50/50 rounded-2xl py-4 border border-slate-100">
-                        <MeteoGauge value={d?.dailyCumulative ?? 0} compact={true} />
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="bg-white border border-slate-100 rounded-xl p-3">
-                          <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1 font-sans">Intensity</span>
-                          <div className="text-xl font-black text-slate-800 tabular-nums">
-                            {(d?.hourlyIntensity ?? 0).toFixed(1)}
-                            <span className="text-[10px] ml-1 text-slate-400">mm/h</span>
-                          </div>
-                        </div>
-                        <div className="bg-white border border-slate-100 rounded-xl p-3">
-                          <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1 font-sans">Status</span>
-                          <div className={`text-[11px] font-black uppercase ${d?.status === 'active' ? 'text-emerald-500' : 'text-slate-400'}`}>
-                            {d?.status === 'active' ? '● Reporting' : '○ Standby'}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Popup>
               </CircleMarker>
             );
           })}

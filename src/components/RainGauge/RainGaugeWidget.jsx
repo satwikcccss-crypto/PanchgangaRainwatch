@@ -221,10 +221,12 @@ export const SimpleRainIndicator = ({ station, data, active, onClick }) => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex justify-between items-end">
-        <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">TELEMETRY</span>
-        <div className="text-[9px] font-black uppercase tracking-widest py-0.5 px-2 rounded-full bg-slate-50 border border-slate-100" style={{ color: cfg.color }}>
+      {/* Footer (Dynamic Telemetry Status) */}
+      <div className="flex justify-between items-end mt-2">
+        <span className="text-[8px] font-black text-slate-300 uppercase tracking-[0.2em] font-sans">
+          RTDAS Live Uplink
+        </span>
+        <div className="text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-slate-100 bg-slate-50 shadow-sm" style={{ color: cfg.color }}>
           {cfg.label}
         </div>
       </div>
@@ -232,9 +234,8 @@ export const SimpleRainIndicator = ({ station, data, active, onClick }) => {
   );
 };
 
-// ─── NEAT QUICK-INFO POPUP (Simple Mode) ────────────────────────────────────
-export const SimpleZoomedGauge = ({ station, data, onClose }) => {
-  const cfg = getIMDConfigByKey(data?.imdLevel || 'no_rain');
+// ─── QUICK RAIN WIDGET MODAL (RainGauge Style) ──────────────────────────────
+export const QuickRainWidgetModal = ({ station, data, onClose }) => {
   return (
     <AnimatePresence>
       {station && (
@@ -250,50 +251,15 @@ export const SimpleZoomedGauge = ({ station, data, onClose }) => {
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             className="fixed inset-0 flex items-center justify-center z-[210] pointer-events-none p-6"
           >
-            <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] w-full max-w-sm pointer-events-auto relative overflow-hidden border border-slate-200 p-8">
-              <button
+            <div className="bg-white rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] w-full max-w-sm pointer-events-auto relative overflow-hidden border border-slate-200">
+               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-1.5 hover:bg-slate-100 rounded-full text-slate-400 transition-all"
+                className="absolute top-6 right-6 p-2 bg-slate-50 hover:bg-red-500 hover:text-white rounded-full text-slate-500 transition-all z-[100] shadow-sm"
               >
                 <X className="w-5 h-5" />
               </button>
-
-              <div className="flex flex-col items-center text-center gap-6">
-                <div 
-                  className="w-16 h-1 rounded-full" 
-                  style={{ backgroundColor: station.markerColor || cfg.color }} 
-                />
-                
-                <div>
-                  <h3 className="text-lg font-black text-academic-blue uppercase font-serif mb-1 leading-tight">
-                    {station.name}
-                  </h3>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    STATION NODE {station.stationNo}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-8 w-full border-y border-slate-50 py-6">
-                   <div className="flex flex-col gap-1">
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hourly</span>
-                      <div className="text-xl font-black text-slate-800 tabular-nums">
-                        {(data?.hourlyIntensity ?? 0).toFixed(1)}<span className="text-[10px] ml-1 opacity-40">mm/h</span>
-                      </div>
-                   </div>
-                   <div className="flex flex-col gap-1">
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total</span>
-                      <div className="text-xl font-black text-blue-600 tabular-nums">
-                        {(data?.dailyCumulative ?? 0).toFixed(1)}<span className="text-[10px] ml-1 opacity-40">mm</span>
-                      </div>
-                   </div>
-                </div>
-
-                <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-full border border-slate-100">
-                   <Activity className="w-4 h-4" style={{ color: cfg.color }} />
-                   <span className="text-xs font-black uppercase tracking-widest" style={{ color: cfg.color }}>
-                     {cfg.label} Rainfall
-                   </span>
-                </div>
+              <div className="p-2 h-[420px]">
+                 <RainGaugeWidget station={station} data={data} />
               </div>
             </div>
           </motion.div>
@@ -319,22 +285,22 @@ export const DetailedAnalyticsModal = ({ station, data, onClose }) => {
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center z-[220] pointer-events-none p-4 md:p-8"
+            className="fixed inset-0 flex items-center justify-center z-[220] pointer-events-none p-4"
           >
-            <div className="bg-white rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(30,58,138,0.25)] w-full max-w-5xl pointer-events-auto relative overflow-hidden flex flex-col md:flex-row border border-slate-200"
-              style={{ maxHeight: 'calc(100vh - 80px)' }}
+            <div className="bg-white rounded-[2rem] shadow-[0_32px_64px_-12px_rgba(30,58,138,0.25)] w-full max-w-4xl pointer-events-auto relative overflow-hidden flex flex-col md:flex-row border border-slate-200"
+              style={{ maxHeight: 'calc(100vh - 60px)' }}
             >
               <button
                 onClick={onClose}
-                className="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-red-500 hover:text-white rounded-full text-slate-500 transition-all z-[100] shadow-sm"
+                className="absolute top-5 right-5 p-2 bg-slate-50 hover:bg-red-500 hover:text-white rounded-full text-slate-500 transition-all z-[100] shadow-sm"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
 
               {/* ── Left Sidebar (Station Info & Gauge) ────────────────── */}
-              <div className="w-full md:w-[320px] bg-slate-50 border-r border-slate-100 p-8 flex flex-col gap-6">
+              <div className="w-full md:w-[260px] bg-slate-50 border-r border-slate-100 p-6 flex flex-col gap-6">
                 <div className="space-y-4">
-                   <div className="aspect-square rounded-3xl overflow-hidden border-2 border-white shadow-xl relative bg-slate-200">
+                   <div className="aspect-square rounded-2xl overflow-hidden border border-white shadow-lg relative bg-slate-200">
                      <img 
                        src={station.imageUrl} 
                        alt={station.name} 
@@ -344,37 +310,37 @@ export const DetailedAnalyticsModal = ({ station, data, onClose }) => {
                          e.target.src = 'https://images.unsplash.com/photo-1544653852-237285eec32b?q=80&w=400&auto=format&fit=crop';
                        }}
                      />
-                     <div className="absolute top-3 left-3 bg-academic-blue/90 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                        <span className="text-[9px] font-black text-white uppercase tracking-wider">RG-{station.stationNo}</span>
+                     <div className="absolute top-2 left-2 bg-slate-900/80 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/10">
+                        <span className="text-[8px] font-black text-white uppercase tracking-wider">RG-{station.stationNo}</span>
                      </div>
                    </div>
 
                    <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">
                       {station.authority}
                     </span>
-                    <h3 className="text-xl font-black text-academic-blue leading-tight uppercase font-serif">
+                    <h3 className="text-lg font-black text-academic-blue leading-tight uppercase font-serif">
                       {station.name}
                     </h3>
-                    <div className="flex items-center gap-2 mt-2 text-[10px] font-bold text-slate-500 uppercase">
-                      <MapPin className="w-3 h-3 text-academic-gold" />
+                    <div className="flex items-center gap-2 mt-1.5 text-[9px] font-bold text-slate-500 uppercase">
+                      <MapPin className="w-2.5 h-2.5 text-academic-gold" />
                       {station.location.lat.toFixed(4)}°N, {station.location.lng.toFixed(4)}°E
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-3xl p-6 border border-slate-200/60 shadow-sm flex flex-col items-center gap-3">
-                  <MeteoGauge value={data?.dailyCumulative ?? 0} />
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
+                <div className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm flex flex-col items-center gap-2">
+                  <MeteoGauge value={data?.dailyCumulative ?? 0} compact={true} />
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                      Atmospheric Load
                   </span>
                 </div>
               </div>
 
               {/* ── Main Panel (Analytics & Hyetograph) ───────────────── */}
-              <div className="flex-1 p-8 flex flex-col gap-8 overflow-y-auto">
+              <div className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto">
                 {/* Rolling Analytics (IS Standard Window) */}
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-2.5">
                   {[
                     { label: 'Current 1h',  val: data?.rollingStats?.['1h'] || 0, color: 'text-blue-600' },
                     { label: 'Rolling 3h',  val: data?.rollingStats?.['3h'] || 0, color: 'text-emerald-500' },
@@ -382,28 +348,28 @@ export const DetailedAnalyticsModal = ({ station, data, onClose }) => {
                     { label: 'Rolling 12h', val: data?.rollingStats?.['12h'] || 0, color: 'text-orange-500' },
                     { label: 'Rolling 24h', val: data?.rollingStats?.['24h'] || 0, color: 'text-red-500' },
                   ].map((stat, i) => (
-                    <div key={i} className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter block mb-1">
+                    <div key={i} className="bg-slate-50 rounded-xl p-3 border border-slate-100/80">
+                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter block mb-0.5">
                         {stat.label}
                       </span>
-                      <div className={`text-lg font-black tabular-nums ${stat.color}`}>
+                      <div className={`text-base font-black tabular-nums ${stat.color}`}>
                         {parseFloat(stat.val).toFixed(1)}
-                        <span className="text-[10px] ml-1 opacity-50 uppercase">mm</span>
+                        <span className="text-[9px] ml-0.5 opacity-50 uppercase">mm</span>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 {/* Hyetograph Section */}
-                <div className="flex-1 min-h-[300px] flex flex-col bg-white border border-slate-100 rounded-3xl p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h4 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-academic-blue" />
+                <div className="flex-1 min-h-[280px] flex flex-col bg-white border border-slate-100 rounded-2xl p-5">
+                  <div className="flex items-center justify-between mb-5">
+                    <h4 className="text-[10px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                      <Activity className="w-3.5 h-3.5 text-academic-blue" />
                       Station Hyetograph — Intensity vs. Accumulation
                     </h4>
                     <div className="flex items-center gap-2">
-                       <div className="w-2 h-2 rounded-full bg-academic-blue animate-pulse" />
-                       <span className="text-[10px] font-bold text-slate-400 uppercase">Live Telemetry</span>
+                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Live Telemetry</span>
                     </div>
                   </div>
                   <div className="flex-1">
@@ -412,29 +378,29 @@ export const DetailedAnalyticsModal = ({ station, data, onClose }) => {
                 </div>
 
                 {/* Technical Metadata Footer */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-slate-100">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-5 border-t border-slate-100">
                   <div>
-                    <span className="text-[9px] font-black text-slate-400 uppercase block mb-1">Battery Power</span>
-                    <div className="text-[11px] font-bold text-slate-700 flex items-center gap-2">
+                    <span className="text-[8px] font-black text-slate-400 uppercase block mb-1">Battery Power</span>
+                    <div className="text-[10px] font-bold text-slate-700 flex items-center gap-1.5">
                       <Zap className="w-3 h-3 text-amber-500" />
                       {data?.batteryVoltage ? `${data.batteryVoltage.toFixed(2)} V` : 'N/A'}
                     </div>
                   </div>
                   <div>
-                    <span className="text-[9px] font-black text-slate-400 uppercase block mb-1">Uplink Health</span>
-                    <div className="text-[11px] font-bold text-slate-700 flex items-center gap-2">
+                    <span className="text-[8px] font-black text-slate-400 uppercase block mb-1">Uplink Health</span>
+                    <div className="text-[10px] font-bold text-slate-700 flex items-center gap-1.5">
                       <Globe className="w-3 h-3 text-emerald-500" />
                       {data?.signalStrength ? `${data.signalStrength} / 100` : 'Search...'}
                     </div>
                   </div>
                   <div>
-                    <span className="text-[9px] font-black text-slate-400 uppercase block mb-1">Sensor Standard</span>
-                    <div className="text-[11px] font-bold text-slate-700">ISO/IS 0.2mm TP</div>
+                    <span className="text-[8px] font-black text-slate-400 uppercase block mb-1">Sensor Standard</span>
+                    <div className="text-[10px] font-bold text-slate-700">ISO/IS 0.2mm TP</div>
                   </div>
                   <div>
-                    <span className="text-[9px] font-black text-slate-400 uppercase block mb-1">Data Source</span>
-                    <div className={data?.isMockData ? 'text-amber-500 font-bold text-[10px] uppercase' : 'text-emerald-500 font-bold text-[10px] uppercase'}>
-                      {data?.isMockData ? '⚠ Demo Dataset' : '● Cryptograph Encrypted'}
+                    <span className="text-[8px] font-black text-slate-400 uppercase block mb-1">Data Source</span>
+                    <div className={data?.isMockData ? 'text-amber-500 font-bold text-[9px] uppercase' : 'text-emerald-500 font-bold text-[9px] uppercase'}>
+                      {data?.isMockData ? '⚠ Demo Dataset' : '● Cryptograph Secure'}
                     </div>
                   </div>
                 </div>

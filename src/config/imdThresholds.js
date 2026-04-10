@@ -173,10 +173,12 @@ export const getIMDConfigByKey = (key) => IMD_LEVELS[key] || IMD_LEVELS.no_rain;
  * Determine the highest alert across multiple stations
  */
 export const getNetworkAlertLevel = (stationDataMap) => {
+  if (!stationDataMap || typeof stationDataMap !== 'object') return 'no_rain';
   let maxPriority = 0;
   let maxKey = 'no_rain';
   Object.values(stationDataMap).forEach(d => {
-    const cfg = IMD_LEVELS[d?.imdLevel];
+    if (!d || !d.imdLevel) return;
+    const cfg = IMD_LEVELS[d.imdLevel];
     if (cfg && cfg.priority > maxPriority) {
       maxPriority = cfg.priority;
       maxKey = d.imdLevel;

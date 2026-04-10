@@ -121,43 +121,11 @@ const NetworkSensors = ({ stationData = {}, onViewAnalytics }) => {
              <Activity className="w-6 h-6" /> Telemetry Network Analysis
            </h2>
            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-             RTDAS Sensor Grid · IS-Standards · 24/7 Monitoring
+             RTDAS Sensor Grid · 24/7 Monitoring
            </p>
         </div>
         <div className="flex flex-wrap gap-3">
           {/* Export utility removed as per request */}
-        </div>
-      </div>
-
-      {/* Summary Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="glass-light rounded-3xl p-6 border border-slate-200/50">
-          <div className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2">Network Accumulation</div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black text-slate-800 tabular-nums">{totalRain.toFixed(1)}</span>
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">mm Today</span>
-          </div>
-        </div>
-        <div className="glass-light rounded-3xl p-6 border border-slate-200/50">
-          <div className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2">Network Average</div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black text-slate-800 tabular-nums">{(totalRain / STATIONS.length).toFixed(1)}</span>
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">mm / Station</span>
-          </div>
-        </div>
-        <div className="glass-light rounded-3xl p-6 border border-slate-200/50">
-          <div className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2">Network Intensity</div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black text-slate-800 tabular-nums">{avgIntensity.toFixed(2)}</span>
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">mm/hr avg</span>
-          </div>
-        </div>
-        <div className="glass-light rounded-3xl p-6 border border-emerald-100 bg-emerald-50/20">
-          <div className="text-[10px] font-black tracking-[0.2em] text-emerald-600 uppercase mb-2">Operational Status</div>
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xl font-bold text-emerald-700 uppercase tracking-tight">Active & Reporting</span>
-          </div>
         </div>
       </div>
 
@@ -171,28 +139,6 @@ const NetworkSensors = ({ stationData = {}, onViewAnalytics }) => {
             index={i} 
             onViewAnalytics={onViewAnalytics}
           />
-        ))}
-      </div>
-
-      {/* Secondary Technical Telemetry Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-8 pb-4">
-        {[
-          { icon: <Activity className="w-3.5 h-3.5 text-blue-600" />,   label: 'Active Nodes', value: `0${Object.keys(stationData).length || STATIONS.length} of 05` },
-          { icon: <Globe    className="w-3.5 h-3.5 text-emerald-600" />, label: 'Gateway',      value: 'CCCSS-SU-RG-01' },
-          { icon: <Clock    className="w-3.5 h-3.5 text-amber-600" />,   label: 'Latency',      value: '< 1500 ms' },
-          { icon: <ShieldAlert className="w-3.5 h-3.5 text-blue-600" />, label: 'Protocol',     value: 'TLS 1.3 / AES' },
-          { icon: <Radio    className="w-3.5 h-3.5 text-indigo-600" />, label: 'Uplink',       value: 'ThingSpeak API' },
-        ].map(({ icon, label, value }) => (
-          <div
-            key={label}
-            className="glass-light rounded-2xl p-4 border border-slate-200/50 shadow-sm"
-          >
-            <div className="flex items-center gap-2 mb-1">
-              {icon}
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</span>
-            </div>
-            <div className="text-[13px] font-mono font-bold text-slate-800 truncate">{value}</div>
-          </div>
         ))}
       </div>
     </div>
