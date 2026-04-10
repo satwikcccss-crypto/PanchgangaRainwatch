@@ -55,10 +55,11 @@ const RainRadarTile = ({ isPlaying, onTimeUpdate }) => {
   return (
     <TileLayer
       key={`radar-${currentTs}`}
-      url={`https://tilecache.rainviewer.com/v2/radar/${currentTs}/512/{z}/{x}/{y}/2/1_1.png`}
+      url={`https://tilecache.rainviewer.com/v2/radar/${currentTs}/256/{z}/{x}/{y}/2/1_1.png`}
       opacity={0.65}
       zIndex={100} // Always above base layers
       attribution="&copy; RainViewer"
+      maxNativeZoom={12}
     />
   );
 };
