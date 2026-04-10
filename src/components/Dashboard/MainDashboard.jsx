@@ -225,19 +225,24 @@ const MainDashboard = () => {
             <div className="space-y-6">
               <AlertBanner imdLevelKey={networkAlertKey} />
               
-              {/* Station summary cards (Floodwatch Plates) */}
-              <StatsOverview 
-                stationData={stationData}
-                selectedId={selectedId}
-                onStationClick={(id) => {
-                  setSelectedId(id);
-                  setQuickStation(STATIONS.find(s => s.id === id));
-                }}
-              />
-
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-                {/* Left Column (Chart/Map) */}
+                {/* Left Column (Primary Interactive Map) */}
                 <div className="xl:col-span-8 space-y-6">
+                  {/* Map at the top */}
+                  <div className="h-[650px]">
+                    <ErrorBoundary label="Interactive Map">
+                      <InteractiveMap
+                        stationData={stationData}
+                        selectedId={selectedId}
+                        onStationClick={(id) => {
+                          setSelectedId(id);
+                          setDetailedStation(STATIONS.find(s => s.id === id));
+                        }}
+                      />
+                    </ErrorBoundary>
+                  </div>
+
+                  {/* Chart moved to the bottom */}
                   <div className="academic-panel p-6 group">
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-5 gap-4">
                       <div>
@@ -266,19 +271,6 @@ const MainDashboard = () => {
                         />
                       </ErrorBoundary>
                     </div>
-                  </div>
-
-                  <div className="h-[440px]">
-                    <ErrorBoundary label="Interactive Map">
-                      <InteractiveMap
-                        stationData={stationData}
-                        selectedId={selectedId}
-                        onStationClick={(id) => {
-                          setSelectedId(id);
-                          setQuickStation(STATIONS.find(s => s.id === id));
-                        }}
-                      />
-                    </ErrorBoundary>
                   </div>
                 </div>
 
