@@ -40,14 +40,17 @@ const RainRadarTile = ({ isPlaying, onTimeUpdate }) => {
   useEffect(() => {
     if (!isPlaying || timestamps.length === 0) return;
     const timer = setInterval(() => {
-      setCurrentIndex(prev => {
-        const next = (prev + 1) % timestamps.length;
-        onTimeUpdate(timestamps[next]);
-        return next;
-      });
+      setCurrentIndex(prev => (prev + 1) % timestamps.length);
     }, 1200); // 1.2s per frame
     return () => clearInterval(timer);
-  }, [isPlaying, timestamps, onTimeUpdate]);
+  }, [isPlaying, timestamps]);
+
+  // Sync radar frame time safely with parent InteractiveMap outside of pure state updaters
+  useEffect(() => {
+    if (timestamps.length > 0) {
+      onTimeUpdate(timestamps[currentIndex]);
+    }
+  }, [currentIndex, timestamps, onTimeUpdate]);
 
   if (timestamps.length === 0) return null;
   const currentTs = timestamps[currentIndex];
