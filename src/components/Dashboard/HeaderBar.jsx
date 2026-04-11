@@ -98,15 +98,17 @@ const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick, activeView,
           <div className="flex items-center gap-2">
             {connectionStatus === 'online' ? (
               <Wifi className="w-4 h-4 text-emerald-600" />
+            ) : connectionStatus === 'demo' ? (
+              <Wifi className="w-4 h-4 text-amber-500" />
             ) : (
               <WifiOff className="w-4 h-4 text-red-600" />
             )}
             <span
               className={`text-xs font-bold uppercase tracking-widest ${
-                connectionStatus === 'online' ? 'text-emerald-600' : 'text-red-600'
+                connectionStatus === 'online' ? 'text-emerald-600' : connectionStatus === 'demo' ? 'text-amber-500' : 'text-red-600'
               }`}
             >
-              Network: {connectionStatus === 'online' ? 'Secure' : 'Offline'}
+              Network: {connectionStatus === 'online' ? 'Secure' : connectionStatus === 'demo' ? 'Demo Uplink' : 'Offline'}
             </span>
           </div>
           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1 font-mono">

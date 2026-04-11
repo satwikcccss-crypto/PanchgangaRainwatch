@@ -63,13 +63,13 @@ const InteractiveMap = ({ stationData, selectedId, onStationClick }) => {
                 attribution="&copy; OpenStreetMap contributors"
               />
             </BaseLayer>
-            <BaseLayer name="Google Hybrid" checked>
+            <BaseLayer name="Google Hybrid">
               <TileLayer
                 url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
                 attribution="Google Maps"
               />
             </BaseLayer>
-            <BaseLayer name="ESRI Satellite">
+            <BaseLayer name="ESRI Satellite" checked>
               <TileLayer
                 url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                 attribution="Esri"
@@ -146,6 +146,7 @@ const InteractiveMap = ({ stationData, selectedId, onStationClick }) => {
         <div className="absolute bottom-12 left-2 z-[1000] bg-white/95 backdrop-blur border border-slate-200 px-3 py-2 rounded-md shadow-sm pointer-events-none font-sans">
           <div className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1">IMD Intensity Scale</div>
           {[
+            { label: 'No Rain',      color: '#94a3b8' },
             { label: 'Light',        color: '#22c55e' },
             { label: 'Moderate',     color: '#eab308' },
             { label: 'Rather Heavy', color: '#f97316' },

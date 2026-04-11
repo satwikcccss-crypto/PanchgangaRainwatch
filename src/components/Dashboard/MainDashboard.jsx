@@ -206,13 +206,14 @@ const MainDashboard = () => {
 
   const networkAlertKey = getNetworkAlertLevel(stationData);
   const selectedStation = STATIONS.find(s => s.id === selectedId);
+  const isDemoNetwork = Object.values(stationData).every(d => d.isMockData);
 
   return (
     <div className="min-h-screen flex flex-col pt-8">
       <div className="max-w-[1600px] w-full mx-auto px-4 lg:px-8 flex-grow pb-8">
         
         <HeaderBar
-          connectionStatus={loading ? 'offline' : 'online'}
+          connectionStatus={loading ? 'offline' : (isDemoNetwork ? 'demo' : 'online')}
           lastUpdateTime={lastUpdate}
           onAboutClick={() => setIsAboutOpen(true)}
           activeView={activeView}
