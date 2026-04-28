@@ -1,5 +1,5 @@
 # 🌧 Panchganga Rain Gauge Monitoring System
-### Real-Time Hydrological Command Center | RTDAS
+### Real-Time Hydrological Command Center | 
 **Centre for Climate Change and Sustainability Studies (CCCSS)**  
 **Shivaji University, Kolhapur**
 
