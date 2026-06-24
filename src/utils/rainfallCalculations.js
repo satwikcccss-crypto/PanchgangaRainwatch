@@ -137,12 +137,11 @@ export const calculateDailyCumulative = (feeds, field = 'field1') => {
     .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
   if (DATA_MODE === 'cumulative') {
-    if (todayFeeds.length < 2) return 0;
-    let total = 0;
-    for (let i = 1; i < todayFeeds.length; i++) {
-      total += safeIncrement(todayFeeds[i - 1][field], todayFeeds[i][field]);
-    }
-    return parseFloat(total.toFixed(2));
+    const validFeeds = feeds.filter(f => f[field] != null);
+    if (validFeeds.length === 0) return 0;
+    const sortedValid = [...validFeeds].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const latestValue = parseFloat(sortedValid[0][field]) || 0;
+    return parseFloat(latestValue.toFixed(2));
   } else {
     return parseFloat(
       todayFeeds.reduce((s, f) => s + (parseFloat(f[field]) || 0), 0).toFixed(2)
