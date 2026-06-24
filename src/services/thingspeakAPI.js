@@ -116,12 +116,14 @@ export const fetchStation = async (stationId) => {
     const hasData = feeds && feeds.some(f => f[field] !== null && f[field] !== undefined);
 
     if (!hasData) {
-      // Fallback: Fetch actual current weather/precipitation from Open-Meteo API
+      // Fallback: Fetch actual current weather/precipitation and daily sum from Open-Meteo API
       try {
-        const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${station.location.lat}&longitude=${station.location.lng}&current=precipitation,temperature_2m,relative_humidity_2m&timezone=Asia%2FKolkata`;
+        const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${station.location.lat}&longitude=${station.location.lng}&current=precipitation,temperature_2m,relative_humidity_2m&daily=precipitation_sum&timezone=Asia%2FKolkata&forecast_days=1`;
         const omResponse = await axios.get(omUrl);
         const current = omResponse.data?.current || {};
+        const daily = omResponse.data?.daily || {};
         const rain = current.precipitation || 0;
+        const dailyRain = (daily.precipitation_sum && daily.precipitation_sum[0] !== undefined) ? daily.precipitation_sum[0] : rain;
         const temp = current.temperature_2m || 25.0;
         const hum = current.relative_humidity_2m || 75;
 
@@ -131,7 +133,7 @@ export const fetchStation = async (stationId) => {
           timestamp:          new Date().toISOString(),
           hourlyIntensity:    rain,
           instantaneousRate:  rain,
-          dailyCumulative:    rain, // Current rain amount
+          dailyCumulative:    dailyRain, // Daily rainfall sum today (00:00 to 24:00)
           rawLatestValue:     rain,
           imdLevel:           classifyRainfall(rain),
           timeSeries:         generateLiveMeteoTimeSeries(station, rain),
