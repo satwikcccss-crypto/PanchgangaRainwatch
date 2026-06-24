@@ -84,28 +84,32 @@ export const calculateHourlyIntensity = (feeds, field = 'field1') => {
 export const calculateInstantaneousRate = (feeds, field = 'field1') => {
   if (!feeds || feeds.length < 2) return 0;
 
-  const sorted = [...feeds].sort(
-    (a, b) => new Date(b.created_at) - new Date(a.created_at)
-  );
+  const now = new Date();
+  const windowStart = new Date(now.getTime() - 15 * 60 * 1000);
 
-  const latest   = sorted[0];
-  const previous = sorted[1];
+  const recent = feeds
+    .filter(f => new Date(f.created_at) >= windowStart && f[field] != null)
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-  if (!latest[field] || !previous[field]) return 0;
+  if (recent.length < 2) return 0;
 
-  const mmIncrement = DATA_MODE === 'cumulative'
-    ? safeIncrement(previous[field], latest[field])
-    : parseFloat(latest[field]) || 0;
+  let totalIncrement = 0;
+  if (DATA_MODE === 'cumulative') {
+    for (let i = 1; i < recent.length; i++) {
+      totalIncrement += safeIncrement(recent[i - 1][field], recent[i][field]);
+    }
+  } else {
+    totalIncrement = recent.reduce((sum, f) => sum + (parseFloat(f[field]) || 0), 0);
+  }
 
-  if (mmIncrement === 0) return 0;
-
-  const t1 = new Date(previous.created_at);
-  const t2 = new Date(latest.created_at);
+  const t1 = new Date(recent[0].created_at);
+  const t2 = new Date(recent[recent.length - 1].created_at);
   const intervalHrs = (t2 - t1) / (1000 * 3600);
 
-  if (intervalHrs <= 0) return 0;
+  // Require at least a tiny interval to avoid division by zero
+  if (intervalHrs <= 0.01) return 0;
 
-  return parseFloat((mmIncrement / intervalHrs).toFixed(2));
+  return parseFloat((totalIncrement / intervalHrs).toFixed(2));
 };
 
 /**

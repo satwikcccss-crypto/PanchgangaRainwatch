@@ -90,7 +90,7 @@ const GaugeCard = ({ station, data, index, onViewAnalytics }) => {
       {/* Action Button */}
       <button
         onClick={() => onViewAnalytics?.(station)}
-        className="mt-6 w-full py-3 bg-white border border-slate-200 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] text-slate-400 hover:bg-academic-blue hover:text-white hover:border-academic-blue transition-all shadow-sm"
+        className="mt-6 w-full py-3 bg-white border border-slate-200 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] text-slate-500 hover:bg-slate-50 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm"
       >
         View Analytics
       </button>
@@ -121,7 +121,7 @@ const NetworkSensors = ({ stationData = {}, onViewAnalytics }) => {
              <Activity className="w-6 h-6" /> Telemetry Network Analysis
            </h2>
            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-             RTDAS Sensor Grid · 24/7 Monitoring
+             ThingSpeak Sensor Grid · 24/7 Monitoring
            </p>
         </div>
         <div className="flex flex-wrap gap-3">

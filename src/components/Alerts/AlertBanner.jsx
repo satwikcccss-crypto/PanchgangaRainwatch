@@ -13,10 +13,20 @@ const ICON_MAP = {
   extreme:      <Zap className="w-5 h-5" />,
 };
 
-const AlertBanner = ({ imdLevelKey }) => {
+const AlertBanner = ({ imdLevelKey, stationData = {} }) => {
   const [visible, setVisible] = useState(false);
   const cfg = IMD_LEVELS[imdLevelKey] || IMD_LEVELS.no_rain;
   const showBanner = cfg.priority >= 2; // moderate and above
+
+  const stationConditions = Object.values(stationData).map(data => {
+    const sCfg = IMD_LEVELS[data.imdLevel] || IMD_LEVELS.no_rain;
+    return {
+      name: data.stationName,
+      label: sCfg.label,
+      color: sCfg.color,
+      priority: sCfg.priority
+    };
+  }).sort((a, b) => b.priority - a.priority);
 
   useEffect(() => {
     setVisible(showBanner);
@@ -45,9 +55,17 @@ const AlertBanner = ({ imdLevelKey }) => {
                 className="text-xs font-black uppercase tracking-widest"
                 style={{ color: cfg.color }}
               >
-                {cfg.icon} {cfg.label} — RAINFALL NETWORK ALERT
+                {cfg.icon} OVERALL AREA CONDITION: {cfg.label}
               </span>
-              <p className="text-[11px] text-slate-600 mt-0.5">{cfg.description}</p>
+              <p className="text-[11px] text-slate-600 mt-0.5 mb-2">{cfg.description}</p>
+              
+              <div className="flex flex-wrap gap-2 mt-2">
+                {stationConditions.map((s, i) => (
+                  <div key={i} className="text-[10px] font-bold px-2 py-0.5 rounded border bg-white/60" style={{ borderColor: s.color, color: s.color }}>
+                    {s.name}: {s.label}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

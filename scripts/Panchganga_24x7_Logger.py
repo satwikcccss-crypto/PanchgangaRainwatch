@@ -7,11 +7,11 @@ from datetime import datetime
 # ─── CONFIGURATION ───────────────────────────────────────────────────────────
 # Stations matching the dashboard STATIONS registry
 STATIONS = [
-    {"id": "master_control", "name": "MASTER CONTROL", "channel_id": "2487311", "api_key": "V6X1W6B8X6X1W6B8"},
-    {"id": "rukadi",         "name": "RUKADI",         "channel_id": "YOUR_ID",    "api_key": "YOUR_KEY"},
-    {"id": "pattan_kodoli",  "name": "PATTAN KODOLI",  "channel_id": "YOUR_ID",    "api_key": "YOUR_KEY"},
-    {"id": "ichalkaranji",   "name": "ICHALKARANJI",   "channel_id": "YOUR_ID",    "api_key": "YOUR_KEY"},
-    {"id": "nigave_dhumala", "name": "NIGAVE DHUMALA", "channel_id": "YOUR_ID",    "api_key": "YOUR_KEY"},
+    {"id": "master_control", "name": "MASTER CONTROL", "channel_id": "3081641", "api_key": "K9Z65ZZ8MUEQ4725", "field": "field5"},
+    {"id": "rukadi",         "name": "RUKADI",         "channel_id": "3081641", "api_key": "K9Z65ZZ8MUEQ4725", "field": "field2"},
+    {"id": "pattan_kodoli",  "name": "PATTAN KODOLI",  "channel_id": "3081641", "api_key": "K9Z65ZZ8MUEQ4725", "field": "field4"},
+    {"id": "ichalkaranji",   "name": "ICHALKARANJI",   "channel_id": "3081641", "api_key": "K9Z65ZZ8MUEQ4725", "field": "field3"},
+    {"id": "nigave_dhumala", "name": "NIGAVE DHUMALA", "channel_id": "3081641", "api_key": "K9Z65ZZ8MUEQ4725", "field": "field1"},
 ]
 
 # Field Mapping (ThingSpeak Fields)
@@ -58,7 +58,7 @@ def fetch_telemetry(station):
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             station['name'],
             station['id'],
-            latest.get(FIELDS['rainfall'], 0),
+            latest.get(station.get('field', FIELDS['rainfall']), 0),
             latest.get(FIELDS['battery_voltage'], 'N/A'),
             latest.get(FIELDS['temperature'], 'N/A'),
             latest.get(FIELDS['signal_strength'], 'N/A')

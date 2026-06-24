@@ -16,16 +16,16 @@
  */
 
 // ─── Hardware Constants ────────────────────────────────────────────────────
-export const TIP_VOLUME_MM  = 0.2;   // mm of rainfall per tip — CONFIRM with hardware
-export const DATA_MODE      = 'cumulative';  // 'cumulative' | 'interval'
+export const TIP_VOLUME_MM = 0.2;   // mm of rainfall per tip — CONFIRM with hardware
+export const DATA_MODE = 'cumulative';  // 'cumulative' | 'interval'
 export const POLL_INTERVAL_MS = 60000;       // 60-second refresh
 
 // ─── ThingSpeak Field Mapping ──────────────────────────────────────────────
 export const THINGSPEAK_FIELDS = {
-  rainfall:        'field1',   // cumulative rainfall (mm) or tip count
-  batteryVoltage:  'field2',   // optional
-  temperature:     'field3',   // optional ambient temp
-  signalStrength:  'field4',   // optional RSSI
+  rainfall: 'field1',   // cumulative rainfall (mm) or tip count
+  batteryVoltage: 'field2',   // optional
+  temperature: 'field3',   // optional ambient temp
+  signalStrength: 'field4',   // optional RSSI
 };
 
 export const THINGSPEAK_API_BASE = 'https://api.thingspeak.com/channels';
@@ -37,8 +37,9 @@ export const STATIONS = [
     stationNo: 1,
     name: 'MASTER CONTROL: CCCSS Shivaji University',
     shortName: 'CCCSS SU',
-    channelId: '2487311',
-    apiKey:    'V6X1W6B8X6X1W6B8',
+    channelId: '3081641',
+    apiKey: 'K9Z65ZZ8MUEQ4725',
+    field: 'field5',
     sensorType: 'Tipping-Bucket Rain Gauge',
     location: { lat: 16.68115, lng: 74.25431 }, // 16°40'52.15"N 74°15'15.50"E
     district: 'Kolhapur',
@@ -51,8 +52,9 @@ export const STATIONS = [
     stationNo: 2,
     name: 'RUKADI STATION: Panchganga Basin',
     shortName: 'RUKADI',
-    channelId: 'YOUR_CHANNEL_ID_2',
-    apiKey:    'YOUR_API_KEY_2',
+    channelId: '3081641',
+    apiKey: 'K9Z65ZZ8MUEQ4725',
+    field: 'field2',
     sensorType: 'Ultra-Precision Rain Sensor',
     location: { lat: 16.72827, lng: 74.35814 }, // 16°43'41.76"N 74°21'29.32"E
     district: 'Kolhapur',
@@ -65,8 +67,9 @@ export const STATIONS = [
     stationNo: 3,
     name: 'PATTAN KODOLI STATION: Southern Sub-Basin',
     shortName: 'PATTAN KODOLI',
-    channelId: 'YOUR_CHANNEL_ID_3',
-    apiKey:    'YOUR_API_KEY_3',
+    channelId: '3081641',
+    apiKey: 'K9Z65ZZ8MUEQ4725',
+    field: 'field4',
     sensorType: 'Tipping-Bucket Rain Gauge',
     location: { lat: 16.650493, lng: 74.365707 },
     district: 'Kolhapur',
@@ -79,8 +82,9 @@ export const STATIONS = [
     stationNo: 4,
     name: 'ICHALKARANJI STATION: Downstream Hydrology',
     shortName: 'ICHALKARANJI',
-    channelId: 'YOUR_CHANNEL_ID_4',
-    apiKey:    'YOUR_API_KEY_4',
+    channelId: '3081641',
+    apiKey: 'K9Z65ZZ8MUEQ4725',
+    field: 'field3',
     sensorType: 'Tipping-Bucket Rain Gauge',
     location: { lat: 16.691702, lng: 74.451817 },
     district: 'Kolhapur',
@@ -93,8 +97,9 @@ export const STATIONS = [
     stationNo: 5,
     name: 'NIGAVE DHUMALA STATION: Northern Sub-Basin',
     shortName: 'NIGAVE DHUMALA',
-    channelId: 'YOUR_CHANNEL_ID_5',
-    apiKey:    'YOUR_API_KEY_5',
+    channelId: '3081641',
+    apiKey: 'K9Z65ZZ8MUEQ4725',
+    field: 'field1',
     sensorType: 'Tipping-Bucket Rain Gauge',
     location: { lat: 16.745585, lng: 74.208378 },
     district: 'Kolhapur',
@@ -105,5 +110,5 @@ export const STATIONS = [
 ];
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
-export const getStationById   = (id)   => STATIONS.find(s => s.id === id);
-export const isPlaceholderKey = (key)  => !key || key.startsWith('YOUR_');
+export const getStationById = (id) => STATIONS.find(s => s.id === id);
+export const isPlaceholderKey = (key) => !key || key.startsWith('YOUR_');

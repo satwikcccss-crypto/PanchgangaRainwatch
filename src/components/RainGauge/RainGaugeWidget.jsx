@@ -224,7 +224,7 @@ export const SimpleRainIndicator = ({ station, data, active, onClick }) => {
       {/* Footer (Dynamic Telemetry Status) */}
       <div className="flex justify-between items-end mt-2">
         <span className="text-[8px] font-black text-slate-300 uppercase tracking-[0.2em] font-sans">
-          RTDAS Live Uplink
+          ThingSpeak Live Uplink
         </span>
         <div className="text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-slate-100 bg-slate-50 shadow-sm" style={{ color: cfg.color }}>
           {cfg.label}

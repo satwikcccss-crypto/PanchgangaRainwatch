@@ -14,20 +14,37 @@ import {
   buildTimeSeries,
 } from '../utils/rainfallCalculations';
 
-const FIELD = THINGSPEAK_FIELDS.rainfall;
-
+const DEFAULT_FIELD = THINGSPEAK_FIELDS.rainfall;
 // ─── Fetch raw feeds from ThingSpeak ──────────────────────────────────────
-const fetchRawFeeds = async (station, results = 200) => {
+const fetchRawFeeds = async (station) => {
   const url = `${THINGSPEAK_API_BASE}/${station.channelId}/feeds.json`;
   const response = await axios.get(url, {
-    params: { api_key: station.apiKey, results },
-    timeout: 12000,
+    params: { api_key: station.apiKey, minutes: 1440 },
+    timeout: 15000,
   });
   return response.data.feeds || [];
 };
 
+const fetchChannelStatus = async (station) => {
+  const url = `${THINGSPEAK_API_BASE}/${station.channelId}/status.json`;
+  try {
+    const response = await axios.get(url, {
+      params: { api_key: station.apiKey },
+      timeout: 8000,
+    });
+    const feeds = response.data.feeds || response.data.updates || [];
+    if (feeds.length > 0) {
+      const sorted = [...feeds].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      return sorted[0].status || 'active';
+    }
+  } catch (error) {
+    console.warn(`[ThingSpeak] Failed to fetch status for ${station.name}:`, error.message);
+  }
+  return 'active';
+};
+
 // ─── Parse feeds into dashboard-ready data object ─────────────────────────
-const parseFeeds = (feeds, station) => {
+const parseFeeds = (feeds, station, channelStatus = 'active') => {
   if (!feeds || feeds.length === 0) return generateMockData(station);
 
   const sorted = [...feeds].sort(
@@ -35,12 +52,13 @@ const parseFeeds = (feeds, station) => {
   );
   const latest = sorted[0];
 
-  const hourlyIntensity   = calculateHourlyIntensity(feeds, FIELD);
-  const instantaneousRate = calculateInstantaneousRate(feeds, FIELD);
-  const dailyCumulative   = calculateDailyCumulative(feeds, FIELD);
-  const rollingStats      = getRollingStats(feeds, FIELD);
+  const field = station.field || DEFAULT_FIELD;
+  const hourlyIntensity   = calculateHourlyIntensity(feeds, field);
+  const instantaneousRate = calculateInstantaneousRate(feeds, field);
+  const dailyCumulative   = calculateDailyCumulative(feeds, field);
+  const rollingStats      = getRollingStats(feeds, field);
   const imdLevel          = classifyRainfall(hourlyIntensity);
-  const timeSeries        = buildTimeSeries(feeds, FIELD, 12); // Past 12h for hyetograph
+  const timeSeries        = buildTimeSeries(feeds, field, 12); // Past 12h for hyetograph
 
   return {
     stationId:          station.id,
@@ -50,13 +68,13 @@ const parseFeeds = (feeds, station) => {
     instantaneousRate,     // mm/hr — most recent interval rate
     dailyCumulative,       // mm — total today since midnight IST
     rollingStats,          // { '1h', '3h', '6h', '12h', '24h' }
-    rawLatestValue:     parseFloat(latest[FIELD]) || 0,
+    rawLatestValue:     parseFloat(latest[field]) || 0,
     imdLevel,
     timeSeries,
-    batteryVoltage:     parseFloat(latest[THINGSPEAK_FIELDS.batteryVoltage]) || null,
-    temperature:        parseFloat(latest[THINGSPEAK_FIELDS.temperature])    || null,
-    signalStrength:     parseFloat(latest[THINGSPEAK_FIELDS.signalStrength]) || null,
-    status: 'active',
+    batteryVoltage:     station.channelId === '3081641' ? null : (parseFloat(latest[THINGSPEAK_FIELDS.batteryVoltage]) || null),
+    temperature:        station.channelId === '3081641' ? (parseFloat(latest['field6']) || null) : (parseFloat(latest[THINGSPEAK_FIELDS.temperature]) || null),
+    signalStrength:     station.channelId === '3081641' ? (parseFloat(latest['field7']) || null) : (parseFloat(latest[THINGSPEAK_FIELDS.signalStrength]) || null),
+    status: channelStatus,
     isMockData: false,
   };
 };
@@ -71,8 +89,11 @@ export const fetchStation = async (stationId) => {
   }
 
   try {
-    const feeds = await fetchRawFeeds(station, 200);
-    return parseFeeds(feeds, station);
+    const [feeds, channelStatus] = await Promise.all([
+      fetchRawFeeds(station),
+      fetchChannelStatus(station)
+    ]);
+    return parseFeeds(feeds, station, channelStatus);
   } catch (error) {
     console.error(`[ThingSpeak] Failed to fetch ${station.name}:`, error.message);
     return { ...generateMockData(station), fetchError: error.message };

@@ -22,7 +22,7 @@ const RainfallChart = ({ stationData, stationName }) => {
   const cfg     = getIMDConfigByKey(imdKey);
 
   const labels    = series.map(p => p.timeLabel);
-  const intensity = series.map(p => p.intensity);
+  const increments = series.map(p => p.increment);
   const cumul     = series.map(p => p.cumulative);
 
   const data = {
@@ -30,13 +30,12 @@ const RainfallChart = ({ stationData, stationName }) => {
     datasets: [
       {
         type: 'bar',
-        label: 'Intensity (mm/hr)',
-        data: intensity,
+        label: 'Rainfall (mm)',
+        data: increments,
         backgroundColor: series.map(p => {
-          if (p.intensity > 15.5) return 'rgba(239,68,68,0.75)';
-          if (p.intensity > 7.5)  return 'rgba(249,115,22,0.75)';
-          if (p.intensity > 2.4)  return 'rgba(234,179,8,0.75)';
-          if (p.intensity > 0)    return 'rgba(34,197,94,0.75)';
+          if (p.increment > 5) return 'rgba(239,68,68,0.75)'; // High interval rain
+          if (p.increment > 2) return 'rgba(249,115,22,0.75)'; // Med
+          if (p.increment > 0) return 'rgba(56,189,248,0.75)'; // Normal rain
           return 'rgba(148,163,184,0.4)';
         }),
         borderColor: 'transparent',
@@ -83,7 +82,7 @@ const RainfallChart = ({ stationData, stationName }) => {
           title: (items) => items[0]?.label || '',
           label: (item) => {
             if (item.datasetIndex === 0)
-              return ` Intensity: ${item.raw?.toFixed(2) ?? 0} mm/hr`;
+              return ` Rainfall: ${item.raw?.toFixed(2) ?? 0} mm`;
             return ` Cumulative: ${item.raw?.toFixed(2) ?? 0} mm`;
           },
         },
@@ -106,11 +105,11 @@ const RainfallChart = ({ stationData, stationName }) => {
         ticks: {
           font: { family: 'Plus Jakarta Sans', size: 9 },
           color: '#94a3b8',
-          callback: v => `${v} mm/hr`,
+          callback: v => `${v} mm`,
         },
         title: {
           display: true,
-          text: 'Intensity (mm/hr)',
+          text: 'Rainfall (mm)',
           font: { size: 9, weight: '700' },
           color: '#64748b',
         },

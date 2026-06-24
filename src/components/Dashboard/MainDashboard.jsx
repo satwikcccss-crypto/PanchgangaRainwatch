@@ -12,10 +12,11 @@ import { SimpleRainIndicator, DetailedAnalyticsModal, QuickRainWidgetModal } fro
 import RainfallChart from '../Charts/RainfallChart';
 import StatsOverview from './StatsOverview';
 import ErrorBoundary from './ErrorBoundary';
+import InteractiveMap from '../Map/InteractiveMap';
+import ForecastView from './ForecastView';
 import { fetchAllStations } from '../../services/thingspeakAPI';
 import { STATIONS, POLL_INTERVAL_MS } from '../../config/stations';
 import { getNetworkAlertLevel } from '../../config/imdThresholds';
-import InteractiveMap from '../Map/InteractiveMap';
 
 /* ─── Project Info Sidebar ─────────────────────────────────────────────── */
 const InfoPanel = ({ isOpen, onClose }) => (
@@ -88,12 +89,12 @@ const InfoPanel = ({ isOpen, onClose }) => (
             </h3>
             <div className="space-y-1.5">
               {[
-                { label: 'Light Rain',       range: '0.1 – 2.4 mm/hr',   color: '#22c55e' },
-                { label: 'Moderate',         range: '2.5 – 7.5 mm/hr',   color: '#eab308' },
-                { label: 'Rather Heavy',     range: '7.6 – 15.5 mm/hr',  color: '#f97316' },
-                { label: 'Heavy Rain',       range: '15.6 – 64.4 mm/hr', color: '#ef4444' },
-                { label: 'Very Heavy',       range: '64.5 – 115.5 mm/hr',color: '#a855f7' },
-                { label: 'Extremely Heavy',  range: '> 115.5 mm/hr',     color: '#1e293b' },
+                { label: 'Light Rain', range: '0.1 – 2.4 mm/hr', color: '#22c55e' },
+                { label: 'Moderate', range: '2.5 – 7.5 mm/hr', color: '#eab308' },
+                { label: 'Rather Heavy', range: '7.6 – 15.5 mm/hr', color: '#f97316' },
+                { label: 'Heavy Rain', range: '15.6 – 64.4 mm/hr', color: '#ef4444' },
+                { label: 'Very Heavy', range: '64.5 – 115.5 mm/hr', color: '#a855f7' },
+                { label: 'Extremely Heavy', range: '> 115.5 mm/hr', color: '#1e293b' },
               ].map(item => (
                 <div key={item.label} className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: item.color }} />
@@ -122,19 +123,29 @@ const InfoPanel = ({ isOpen, onClose }) => (
             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
               <Phone className="w-4 h-4" /> EMERGENCY HOTLINES
             </h3>
-            <div className="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
+            <div className="space-y-1 bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm max-h-[350px] overflow-y-auto">
               {[
-                { label: 'Flood Control Room',  num: '1070' },
-                { label: 'Police Control Room', num: '100'  },
-                { label: 'Disaster Management', num: '108'  },
-                { label: 'WRD Maharashtra',     num: '022-22027990' },
-                { label: 'Meteorological Dept', num: '020-25535435' },
+                { label: 'Dist. Disaster Control', num: '0231-2659232, 8275121077' },
+                { label: 'Police Control Room', num: '100, 0231-2662333' },
+                { label: 'Police WhatsApp', num: '8669052600, 7218038585' },
+                { label: 'Rescue & Relief', num: '1800-22-4950, 1967' },
+                { label: 'Control Room', num: '0231-2545473, 0231-2659232, 8669052600' },
+               
+               
+                { label: 'Citizen Call Centre', num: '155300' },
+                { label: 'NIC Service Desk', num: '1800-111-555' },
               ].map((c, i, arr) => (
                 <div key={c.label}
-                  className={`flex justify-between font-bold text-slate-700 py-2 ${i < arr.length - 1 ? 'border-b border-slate-200' : ''}`}
+                  className={`flex flex-col xl:flex-row xl:items-center justify-between font-bold text-slate-700 py-2.5 ${i < arr.length - 1 ? 'border-b border-slate-200' : ''}`}
                 >
-                  <span>{c.label}</span>
-                  <a href={`tel:${c.num}`} className="text-academic-blue hover:underline">{c.num}</a>
+                  <span className="text-[11px] uppercase tracking-wider text-slate-500 mb-1 xl:mb-0">{c.label}</span>
+                  <div className="flex flex-wrap gap-2 justify-start xl:justify-end">
+                    {c.num.split(',').map(n => n.trim()).map((n, idx) => (
+                      <a key={idx} href={`tel:${n.replace(/[^0-9+]/g, '')}`} className="text-academic-blue hover:underline bg-blue-50/80 px-2 py-0.5 rounded border border-blue-100 text-xs">
+                        {n}
+                      </a>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -162,17 +173,28 @@ const DisclaimerFooter = () => (
 
 /* ─── Main Dashboard ───────────────────────────────────────────────────── */
 const MainDashboard = () => {
-  const [stationData,     setStationData]     = useState(
-    STATIONS.reduce((acc, s) => ({ ...acc, [s.id]: { hourlyIntensity: 0, dailyCumulative: 0 } }), {})
+  const [stationData, setStationData] = useState(
+    STATIONS.reduce((acc, s) => ({
+      ...acc,
+      [s.id]: {
+        stationId: s.id,
+        stationName: s.name,
+        hourlyIntensity: 0,
+        dailyCumulative: 0,
+        imdLevel: 'no_rain',
+        isMockData: true,
+        timeSeries: []
+      }
+    }), {})
   );
-  const [loading,         setLoading]         = useState(true);
-  const [lastUpdate,      setLastUpdate]      = useState(null);
-  const [selectedId,      setSelectedId]      = useState(STATIONS[0].id);
-  const [isAboutOpen,     setIsAboutOpen]     = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState(null);
+  const [selectedId, setSelectedId] = useState(STATIONS[0].id);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [shuffledStations, setShuffledStations] = useState(STATIONS);
   const [detailedStation, setDetailedStation] = useState(null);
-  const [quickStation,    setQuickStation]    = useState(null);
-  const [activeView,      setActiveView]      = useState('home'); // 'home' | 'network'
+  const [quickStation, setQuickStation] = useState(null);
+  const [activeView, setActiveView] = useState('home'); // 'home' | 'network'
 
   // Keep selected station first in the right-column list
   useEffect(() => {
@@ -211,7 +233,7 @@ const MainDashboard = () => {
   return (
     <div className="min-h-screen flex flex-col pt-8">
       <div className="max-w-[1600px] w-full mx-auto px-4 lg:px-8 flex-grow pb-8">
-        
+
         <HeaderBar
           connectionStatus={loading ? 'offline' : (isDemoNetwork ? 'demo' : 'online')}
           lastUpdateTime={lastUpdate}
@@ -224,8 +246,8 @@ const MainDashboard = () => {
         <div className="mt-4">
           {activeView === 'home' ? (
             <div className="space-y-6">
-              <AlertBanner imdLevelKey={networkAlertKey} />
-              
+              <AlertBanner imdLevelKey={networkAlertKey} stationData={stationData} />
+
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
                 {/* Left Column (Primary Interactive Map) */}
                 <div className="xl:col-span-8 space-y-6">
@@ -252,16 +274,20 @@ const MainDashboard = () => {
                           Rainfall Intensity Time-Series
                         </h3>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {STATIONS.map(s => (
-                          <button
-                            key={s.id}
-                            onClick={() => setSelectedId(s.id)}
-                            className={`auth-button ${selectedId === s.id ? 'active' : ''}`}
-                          >
-                            {s.shortName}
-                          </button>
-                        ))}
+                      <div className="flex flex-wrap gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-200/50 shadow-inner">
+                        {STATIONS.map(s => {
+                          const isSelected = selectedId === s.id;
+                          return (
+                            <button
+                              key={s.id}
+                              onClick={() => setSelectedId(s.id)}
+                              className={`auth-button ${isSelected ? 'active' : ''}`}
+                            >
+                              <span className={`w-1.5 h-1.5 rounded-full transition-transform duration-300 ${isSelected ? 'bg-amber-400 scale-125' : 'bg-slate-400'}`} />
+                              {s.shortName}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                     <div className="h-[300px]">
@@ -279,10 +305,10 @@ const MainDashboard = () => {
                 <div className="xl:col-span-4 space-y-4">
                   <div className="flex items-center justify-between px-1 mb-1">
                     <h3 className="text-xs font-black font-serif text-academic-blue uppercase tracking-widest">
-                       Live Station Gauges
+                      Live Station Gauges
                     </h3>
                     <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-white border border-slate-100 px-3 py-1 rounded shadow-sm flex items-center gap-2">
-                       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> RTDAS 
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> ThingSpeak
                     </div>
                   </div>
 
@@ -302,16 +328,22 @@ const MainDashboard = () => {
                   </div>
 
                   {/* Technical Export Utility removed as per request */}
-                  
+
                   <QRRegistration />
                 </div>
               </div>
             </div>
+          ) : activeView === 'forecast' ? (
+            <div className="mt-6">
+              <ErrorBoundary label="Forecast View">
+                <ForecastView />
+              </ErrorBoundary>
+            </div>
           ) : (
             <div className="mt-6">
               <ErrorBoundary label="Sensor Network View">
-                <NetworkSensors 
-                  stationData={stationData} 
+                <NetworkSensors
+                  stationData={stationData}
                   onViewAnalytics={(s) => setDetailedStation(s)}
                 />
               </ErrorBoundary>
@@ -324,7 +356,7 @@ const MainDashboard = () => {
 
       {/* Modals Selection Logic (Defensive Hydration) */}
       <InfoPanel isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
-      
+
       {quickStation && (
         <QuickRainWidgetModal
           station={quickStation}

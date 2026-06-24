@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Info, Clock, Wifi, WifiOff, CloudRain, Type } from 'lucide-react';
+import { Info, Clock, Wifi, WifiOff, CloudRain, Type, Map as MapIcon } from 'lucide-react';
 
 const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick, activeView, onViewChange }) => {
   const [time, setTime] = useState(new Date());
@@ -45,28 +45,39 @@ const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick, activeView,
       </div>
 
       {/* Center — Navigation Tabs */}
-      <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200/50 shadow-inner overflow-hidden">
+      <div className="flex flex-wrap items-center bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/50 shadow-inner gap-1">
         <button
           onClick={() => onViewChange('home')}
-          className={`px-8 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2 ${
+          className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-2 select-none ${
             activeView === 'home' 
-              ? 'bg-academic-blue text-white shadow-lg' 
-              : 'text-slate-500 hover:bg-slate-200'
+              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/30 scale-[1.02]' 
+              : 'text-slate-600 hover:bg-slate-200/40 hover:text-slate-900'
           }`}
         >
-          <CloudRain className="w-3.5 h-3.5" />
+          <CloudRain className="w-4 h-4 text-slate-500" />
           Dashboard
         </button>
         <button
-          onClick={() => onViewChange('network')}
-          className={`px-8 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2 ${
-            activeView === 'network' 
-              ? 'bg-academic-blue text-white shadow-lg' 
-              : 'text-slate-500 hover:bg-slate-200'
+          onClick={() => onViewChange('forecast')}
+          className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-2 select-none ${
+            activeView === 'forecast' 
+              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/30 scale-[1.02]' 
+              : 'text-slate-600 hover:bg-slate-200/40 hover:text-slate-900'
           }`}
         >
-          <Wifi className="w-3.5 h-3.5" />
-          Sensor Network
+          <CloudRain className="w-4 h-4 text-slate-500" />
+          Forecast
+        </button>
+        <button
+          onClick={() => onViewChange('network')}
+          className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-2 select-none ${
+            activeView === 'network' 
+              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/30 scale-[1.02]' 
+              : 'text-slate-600 hover:bg-slate-200/40 hover:text-slate-900'
+          }`}
+        >
+          <Wifi className="w-4 h-4 text-slate-500" />
+          Network
         </button>
       </div>
 
@@ -118,7 +129,7 @@ const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick, activeView,
 
         <button
           onClick={onAboutClick}
-          className="ml-2 flex items-center gap-2 px-6 py-2.5 bg-white border border-academic-blue hover:bg-academic-blue hover:text-white text-academic-blue rounded transition-all font-bold text-[11px] uppercase tracking-widest active:scale-95"
+          className="ml-2 flex items-center gap-2 px-6 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 hover:text-slate-900 text-slate-700 rounded transition-all font-bold text-[11px] uppercase tracking-widest active:scale-95 shadow-sm"
         >
           <Info className="w-4 h-4" />
           Project Info

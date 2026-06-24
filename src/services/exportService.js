@@ -85,7 +85,7 @@ export const exportTechnicalData = (stationData) => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `RTDAS_Panchganga_Export_${new Date().toISOString().split('T')[0]}.xls`;
+  a.download = `ThingSpeak_Panchganga_Export_${new Date().toISOString().split('T')[0]}.xls`;
   a.click();
   URL.revokeObjectURL(url);
 };
