@@ -8,12 +8,9 @@ import MeteoGauge from './MeteoGauge';
 const GaugeCard = ({ station, data, index, onViewAnalytics }) => {
   const cfg = getIMDConfigByKey(data?.imdLevel || 'no_rain');
   const current = data?.dailyCumulative ?? 0;
-  const intensity = data?.hourlyIntensity ?? 0;
   
   // Scale math: 0-120mm range (standard meteorological tube)
   const percent = Math.min(Math.max((current / 120) * 100, 0), 100);
-  
-  const intensityColor = intensity > 15.5 ? '#ef4444' : intensity > 2.4 ? '#eab308' : '#22c55e';
 
   return (
     <motion.div
@@ -36,24 +33,8 @@ const GaugeCard = ({ station, data, index, onViewAnalytics }) => {
       </div>
 
       {/* Vertical Meteorological Tube (Refined) */}
-      <div className="flex justify-center mb-8 relative pt-4">
+      <div className="flex justify-center mb-8 relative pt-4 mt-auto">
         <MeteoGauge value={current} />
-      </div>
-
-      {/* Rainfall Intensity bar */}
-      <div className="mt-auto space-y-3">
-        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
-          <span>Rainfall Intensity</span>
-          <span className="font-mono text-slate-700">{intensity.toFixed(2)} mm/hr</span>
-        </div>
-        <div className="h-2.5 bg-slate-100 rounded-full relative overflow-hidden ring-1 ring-slate-200/50">
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: `${Math.min(intensity * 4, 100)}%` }}
-            className="absolute h-full rounded-full" 
-            style={{ backgroundColor: intensityColor }}
-          ></motion.div>
-        </div>
       </div>
 
       {/* Technical Telemetry */}

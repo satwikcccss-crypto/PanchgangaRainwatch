@@ -47,12 +47,16 @@ const fetchChannelStatus = async (station) => {
 const parseFeeds = (feeds, station, channelStatus = 'active') => {
   if (!feeds || feeds.length === 0) return generateMockData(station);
 
+  const field = station.field || DEFAULT_FIELD;
+  const hasData = feeds.some(f => f[field] !== null && f[field] !== undefined);
+  if (!hasData) {
+    return generateMockData(station);
+  }
+
   const sorted = [...feeds].sort(
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
   const latest = sorted[0];
-
-  const field = station.field || DEFAULT_FIELD;
   const hourlyIntensity   = calculateHourlyIntensity(feeds, field);
   const instantaneousRate = calculateInstantaneousRate(feeds, field);
   const dailyCumulative   = calculateDailyCumulative(feeds, field);
