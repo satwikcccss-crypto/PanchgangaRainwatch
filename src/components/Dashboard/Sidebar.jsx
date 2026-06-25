@@ -10,7 +10,7 @@ const Sidebar = ({ activeView, onViewChange, onAboutClick, onRefresh, isRefreshi
   ];
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 md:bottom-auto md:left-auto md:right-6 md:top-1/2 md:-translate-y-1/2 md:translate-x-0 z-[1000] flex flex-row md:flex-col items-center gap-3 bg-white/95 backdrop-blur-md px-4 py-3 md:py-6 md:px-3 rounded-full border border-slate-200/80 shadow-[0_10px_30px_rgba(30,58,138,0.08)] select-none">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 md:bottom-auto md:left-6 md:top-1/2 md:-translate-y-1/2 md:translate-x-0 z-[1000] flex flex-row md:flex-col items-center gap-3 bg-white/95 backdrop-blur-md px-4 py-3 md:py-6 md:px-3 rounded-full border border-slate-200/80 shadow-[0_10px_30px_rgba(30,58,138,0.08)] select-none">
       {items.map((item) => {
         const isActive = item.action ? false : activeView === item.id;
         return (
@@ -27,7 +27,7 @@ const Sidebar = ({ activeView, onViewChange, onAboutClick, onRefresh, isRefreshi
             {item.icon}
             
             {/* Tooltip */}
-            <span className="absolute hidden md:block left-0 -translate-x-[110%] top-1/2 -translate-y-1/2 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider py-1.5 px-3 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+            <span className="absolute hidden md:block left-full translate-x-[20%] top-1/2 -translate-y-1/2 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider py-1.5 px-3 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
               {item.label}
             </span>
           </button>
