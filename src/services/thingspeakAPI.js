@@ -102,13 +102,49 @@ const generateLiveMeteoTimeSeries = (station, rainValue) => {
   });
 };
 
+// ─── Fetch Open-Meteo Live Fallback ────────────────────────────────────────
+const fetchOpenMeteoFallback = async (station, originalErrorMsg = '') => {
+  try {
+    const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${station.location.lat}&longitude=${station.location.lng}&current=precipitation,temperature_2m,relative_humidity_2m&daily=precipitation_sum&timezone=Asia%2FKolkata&forecast_days=1`;
+    const omResponse = await axios.get(omUrl);
+    const current = omResponse.data?.current || {};
+    const daily = omResponse.data?.daily || {};
+    const rain = current.precipitation || 0;
+    const dailyRain = (daily.precipitation_sum && daily.precipitation_sum[0] !== undefined) ? daily.precipitation_sum[0] : rain;
+    const temp = current.temperature_2m || 25.0;
+    const hum = current.relative_humidity_2m || 75;
+
+    return {
+      stationId:          station.id,
+      stationName:        station.name,
+      timestamp:          new Date().toISOString(),
+      hourlyIntensity:    rain,
+      instantaneousRate:  rain,
+      dailyCumulative:    dailyRain,
+      rawLatestValue:     rain,
+      imdLevel:           classifyRainfall(rain),
+      timeSeries:         generateLiveMeteoTimeSeries(station, rain),
+      batteryVoltage:     null,
+      temperature:        temp,
+      signalStrength:     92,
+      status:             'active',
+      isMockData:         false,
+      dataSource:         'Open-Meteo Live API',
+      fetchError:         originalErrorMsg || undefined
+    };
+  } catch (omErr) {
+    console.warn(`[Open-Meteo Fallback] Failed for ${station.name}, using mock data:`, omErr.message);
+    return { ...generateMockData(station), fetchError: originalErrorMsg || omErr.message };
+  }
+};
+
 // ─── Fetch one station ─────────────────────────────────────────────────────
 export const fetchStation = async (stationId) => {
   const station = STATIONS.find(s => s.id === stationId);
   if (!station) throw new Error(`Station ${stationId} not found`);
 
   if (isPlaceholderKey(deobfuscate(station.channelId))) {
-    return generateMockData(station);
+    return fetchOpenMeteoFallback(station, 'Placeholder Channel Key');
   }
 
   try {
@@ -121,44 +157,13 @@ export const fetchStation = async (stationId) => {
     const hasData = feeds && feeds.some(f => f[field] !== null && f[field] !== undefined);
 
     if (!hasData) {
-      // Fallback: Fetch actual current weather/precipitation and daily sum from Open-Meteo API
-      try {
-        const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${station.location.lat}&longitude=${station.location.lng}&current=precipitation,temperature_2m,relative_humidity_2m&daily=precipitation_sum&timezone=Asia%2FKolkata&forecast_days=1`;
-        const omResponse = await axios.get(omUrl);
-        const current = omResponse.data?.current || {};
-        const daily = omResponse.data?.daily || {};
-        const rain = current.precipitation || 0;
-        const dailyRain = (daily.precipitation_sum && daily.precipitation_sum[0] !== undefined) ? daily.precipitation_sum[0] : rain;
-        const temp = current.temperature_2m || 25.0;
-        const hum = current.relative_humidity_2m || 75;
-
-        return {
-          stationId:          station.id,
-          stationName:        station.name,
-          timestamp:          new Date().toISOString(),
-          hourlyIntensity:    rain,
-          instantaneousRate:  rain,
-          dailyCumulative:    dailyRain, // Daily rainfall sum today (00:00 to 24:00)
-          rawLatestValue:     rain,
-          imdLevel:           classifyRainfall(rain),
-          timeSeries:         generateLiveMeteoTimeSeries(station, rain),
-          batteryVoltage:     null,
-          temperature:        temp,
-          signalStrength:     92,
-          status:             'active',
-          isMockData:         false,
-          dataSource:         'Open-Meteo Live API'
-        };
-      } catch (omErr) {
-        console.warn(`[Open-Meteo Fallback] Failed for ${station.name}, using mock data:`, omErr.message);
-        return generateMockData(station);
-      }
+      return fetchOpenMeteoFallback(station, 'No telemetry data available');
     }
 
     return parseFeeds(feeds, station, channelStatus);
   } catch (error) {
-    console.error(`[ThingSpeak] Failed to fetch ${station.name}:`, error.message);
-    return { ...generateMockData(station), fetchError: error.message };
+    console.warn(`[ThingSpeak] Failed to fetch ${station.name}, falling back to Open-Meteo:`, error.message);
+    return fetchOpenMeteoFallback(station, error.message);
   }
 };
 
