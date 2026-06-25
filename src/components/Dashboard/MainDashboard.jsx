@@ -251,6 +251,7 @@ const MainDashboard = () => {
         <Sidebar
           activeView={activeView}
           onViewChange={setActiveView}
+          onAboutClick={() => setIsAboutOpen(true)}
           onRefresh={handleRefresh}
           isRefreshing={isRefreshing}
         />

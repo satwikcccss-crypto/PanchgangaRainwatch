@@ -1,21 +1,22 @@
 import React from 'react';
-import { LayoutGrid, Radio, CloudSun, RotateCw, ArrowUp } from 'lucide-react';
+import { LayoutGrid, Radio, CloudSun, Info, RotateCw, ArrowUp } from 'lucide-react';
 
-const Sidebar = ({ activeView, onViewChange, onRefresh, isRefreshing }) => {
+const Sidebar = ({ activeView, onViewChange, onAboutClick, onRefresh, isRefreshing }) => {
   const items = [
     { id: 'home', icon: <LayoutGrid className="w-5 h-5" />, label: 'Dashboard' },
     { id: 'network', icon: <Radio className="w-5 h-5" />, label: 'Telemetry Network' },
     { id: 'forecast', icon: <CloudSun className="w-5 h-5" />, label: 'Weather Forecast' },
+    { id: 'info', icon: <Info className="w-5 h-5" />, label: 'Project Info', action: onAboutClick },
   ];
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 md:bottom-auto md:left-auto md:right-6 md:top-1/2 md:-translate-y-1/2 md:translate-x-0 z-[1000] flex flex-row md:flex-col items-center gap-3 bg-white/95 backdrop-blur-md px-4 py-3 md:py-6 md:px-3 rounded-full border border-slate-200/80 shadow-[0_10px_30px_rgba(30,58,138,0.08)] select-none">
       {items.map((item) => {
-        const isActive = activeView === item.id;
+        const isActive = item.action ? false : activeView === item.id;
         return (
           <button
             key={item.id}
-            onClick={() => onViewChange(item.id)}
+            onClick={() => item.action ? item.action() : onViewChange(item.id)}
             title={item.label}
             className={`p-3 rounded-full transition-all duration-300 relative group ${
               isActive
