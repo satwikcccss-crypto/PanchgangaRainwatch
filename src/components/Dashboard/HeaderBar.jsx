@@ -18,20 +18,20 @@ const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick }) => {
   return (
     <header className="inst-header flex-col lg:flex-row gap-6 py-5">
       {/* Left — Logo + Title */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-4 border-r border-slate-200 pr-6 mr-2">
-          <div className="p-1">
+      <div className="flex flex-col lg:flex-row items-center gap-6 w-full lg:w-auto">
+        <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-6 lg:border-r border-slate-200 lg:pr-6 lg:mr-2 w-full lg:w-auto">
+          <div className="p-1 flex justify-center">
             <img
               src={`${import.meta.env.BASE_URL}cccss_logo.png`}
               alt="Shivaji University CCCSS"
-              className="h-14 lg:h-16 object-contain"
+              className="h-20 lg:h-16 object-contain"
               onError={e => {
                 e.target.src =
                   'https://upload.wikimedia.org/wikipedia/en/b/b3/Shivaji_University_logo.png';
               }}
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
             <h1 className="text-xl lg:text-2xl font-bold font-serif text-academic-blue tracking-tight leading-snug max-w-md">
               Realtime Rain Gauge Monitoring System
               <br />
