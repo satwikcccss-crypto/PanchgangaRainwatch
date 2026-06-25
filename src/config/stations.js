@@ -30,15 +30,15 @@ export const THINGSPEAK_FIELDS = {
 
 export const THINGSPEAK_API_BASE = 'https://api.thingspeak.com/channels';
 
-// ─── Station Registry ──────────────────────────────────────────────────────
+// ─── Station Registry (Obfuscated keys and channel IDs) ────────────────────
 export const STATIONS = [
   {
     id: 'master_control',
     stationNo: 1,
     name: 'MASTER CONTROL: CCCSS Shivaji University',
     shortName: 'CCCSS SU',
-    channelId: '3081641',
-    apiKey: 'K9Z65ZZ8MUEQ4725',
+    channelId: 'GRoSGxweGw==',
+    apiKey: 'YRNwHB9wcBJnf297Hh0YHw==',
     field: 'field5',
     sensorType: 'Tipping-Bucket Rain Gauge',
     location: { lat: 16.68115, lng: 74.25431 }, // 16°40'52.15"N 74°15'15.50"E
@@ -52,8 +52,8 @@ export const STATIONS = [
     stationNo: 2,
     name: 'RUKADI STATION: Panchganga Basin',
     shortName: 'RUKADI',
-    channelId: '3081641',
-    apiKey: 'K9Z65ZZ8MUEQ4725',
+    channelId: 'GRoSGxweGw==',
+    apiKey: 'YRNwHB9wcBJnf297Hh0YHw==',
     field: 'field2',
     sensorType: 'Ultra-Precision Rain Sensor',
     location: { lat: 16.72827, lng: 74.35814 }, // 16°43'41.76"N 74°21'29.32"E
@@ -67,8 +67,8 @@ export const STATIONS = [
     stationNo: 3,
     name: 'PATTAN KODOLI STATION: Southern Sub-Basin',
     shortName: 'PATTAN KODOLI',
-    channelId: '3081641',
-    apiKey: 'K9Z65ZZ8MUEQ4725',
+    channelId: 'GRoSGxweGw==',
+    apiKey: 'YRNwHB9wcBJnf297Hh0YHw==',
     field: 'field4',
     sensorType: 'Tipping-Bucket Rain Gauge',
     location: { lat: 16.650493, lng: 74.365707 },
@@ -82,8 +82,8 @@ export const STATIONS = [
     stationNo: 4,
     name: 'ICHALKARANJI STATION: Downstream Hydrology',
     shortName: 'ICHALKARANJI',
-    channelId: '3081641',
-    apiKey: 'K9Z65ZZ8MUEQ4725',
+    channelId: 'GRoSGxweGw==',
+    apiKey: 'YRNwHB9wcBJnf297Hh0YHw==',
     field: 'field3',
     sensorType: 'Tipping-Bucket Rain Gauge',
     location: { lat: 16.691702, lng: 74.451817 },
@@ -97,8 +97,8 @@ export const STATIONS = [
     stationNo: 5,
     name: 'NIGAVE DHUMALA STATION: Northern Sub-Basin',
     shortName: 'NIGAVE DHUMALA',
-    channelId: '3081641',
-    apiKey: 'K9Z65ZZ8MUEQ4725',
+    channelId: 'GRoSGxweGw==',
+    apiKey: 'YRNwHB9wcBJnf297Hh0YHw==',
     field: 'field1',
     sensorType: 'Tipping-Bucket Rain Gauge',
     location: { lat: 16.745585, lng: 74.208378 },

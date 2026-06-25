@@ -13,23 +13,28 @@ import {
   getRollingStats,
   buildTimeSeries,
 } from '../utils/rainfallCalculations';
+import { deobfuscate } from '../utils/security';
 
 const DEFAULT_FIELD = THINGSPEAK_FIELDS.rainfall;
 // ─── Fetch raw feeds from ThingSpeak ──────────────────────────────────────
 const fetchRawFeeds = async (station) => {
-  const url = `${THINGSPEAK_API_BASE}/${station.channelId}/feeds.json`;
+  const decryptedChannel = deobfuscate(station.channelId);
+  const decryptedKey = deobfuscate(station.apiKey);
+  const url = `${THINGSPEAK_API_BASE}/${decryptedChannel}/feeds.json`;
   const response = await axios.get(url, {
-    params: { api_key: station.apiKey, minutes: 1440 },
+    params: { api_key: decryptedKey, minutes: 1440 },
     timeout: 15000,
   });
   return response.data.feeds || [];
 };
 
 const fetchChannelStatus = async (station) => {
-  const url = `${THINGSPEAK_API_BASE}/${station.channelId}/status.json`;
+  const decryptedChannel = deobfuscate(station.channelId);
+  const decryptedKey = deobfuscate(station.apiKey);
+  const url = `${THINGSPEAK_API_BASE}/${decryptedChannel}/status.json`;
   try {
     const response = await axios.get(url, {
-      params: { api_key: station.apiKey },
+      params: { api_key: decryptedKey },
       timeout: 8000,
     });
     const feeds = response.data.feeds || response.data.updates || [];
@@ -102,7 +107,7 @@ export const fetchStation = async (stationId) => {
   const station = STATIONS.find(s => s.id === stationId);
   if (!station) throw new Error(`Station ${stationId} not found`);
 
-  if (isPlaceholderKey(station.channelId)) {
+  if (isPlaceholderKey(deobfuscate(station.channelId))) {
     return generateMockData(station);
   }
 

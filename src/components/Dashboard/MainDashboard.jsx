@@ -5,6 +5,7 @@ import {
   AlertCircle, Phone, Clock, Radio, CloudRain, Droplets,
 } from 'lucide-react';
 import HeaderBar from './HeaderBar';
+import Sidebar from './Sidebar';
 import NetworkSensors from './NetworkSensors';
 import AlertBanner from '../Alerts/AlertBanner';
 import QRRegistration from '../Alerts/QRRegistration';
@@ -188,13 +189,14 @@ const MainDashboard = () => {
     }), {})
   );
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
   const [selectedId, setSelectedId] = useState(STATIONS[0].id);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [shuffledStations, setShuffledStations] = useState(STATIONS);
   const [detailedStation, setDetailedStation] = useState(null);
   const [quickStation, setQuickStation] = useState(null);
-  const [activeView, setActiveView] = useState('home'); // 'home' | 'network'
+  const [activeView, setActiveView] = useState('home'); // 'home' | 'network' | 'forecast'
 
   // Keep selected station first in the right-column list
   useEffect(() => {
@@ -202,44 +204,55 @@ const MainDashboard = () => {
     if (active) setShuffledStations([active, ...STATIONS.filter(s => s.id !== selectedId)]);
   }, [selectedId]);
 
+  const loadData = async () => {
+    try {
+      const data = await fetchAllStations();
+      setStationData(data);
+      setLastUpdate(
+        new Date().toLocaleTimeString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+        })
+      );
+    } catch (err) {
+      console.error('Failed to fetch station data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Data polling
   useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchAllStations();
-        setStationData(data);
-        setLastUpdate(
-          new Date().toLocaleTimeString('en-IN', {
-            timeZone: 'Asia/Kolkata',
-            hour: '2-digit', minute: '2-digit', second: '2-digit',
-          })
-        );
-      } catch (err) {
-        console.error('Failed to fetch station data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
-    const timer = setInterval(load, POLL_INTERVAL_MS);
+    loadData();
+    const timer = setInterval(loadData, POLL_INTERVAL_MS);
     return () => clearInterval(timer);
   }, []);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await loadData();
+    setIsRefreshing(false);
+  };
 
   const networkAlertKey = getNetworkAlertLevel(stationData);
   const selectedStation = STATIONS.find(s => s.id === selectedId);
   const isDemoNetwork = Object.values(stationData).every(d => d.isMockData);
 
   return (
-    <div className="min-h-screen flex flex-col pt-8">
+    <div className="min-h-screen flex flex-col pt-8 pb-16 md:pb-8">
       <div className="max-w-[1600px] w-full mx-auto px-4 lg:px-8 flex-grow pb-8">
 
         <HeaderBar
           connectionStatus={loading ? 'offline' : (isDemoNetwork ? 'demo' : 'online')}
           lastUpdateTime={lastUpdate}
           onAboutClick={() => setIsAboutOpen(true)}
+        />
+
+        <Sidebar
           activeView={activeView}
           onViewChange={setActiveView}
+          onRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
         />
 
         {/* ── View Switcher Content ── */}
