@@ -33,7 +33,7 @@ const HeaderBar = ({ connectionStatus, lastUpdateTime, onAboutClick }) => {
           </div>
           <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
             <h1 className="text-xl lg:text-2xl font-bold font-serif text-academic-blue tracking-tight leading-snug max-w-md">
-              Realtime Rain Gauge Monitoring System
+              Realtime Rainfall Monitoring System
               <br />
               <span className="text-lg lg:text-xl">Panchganga Basin - Shivaji University, Kolhapur</span>
             </h1>

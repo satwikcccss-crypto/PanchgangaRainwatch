@@ -2,9 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // Build modes:
-//   VITE_BASE=./              → relative paths (for CCCSS-SUK-dashboard embed)
-//   VITE_BASE=/PanchgangaRainwatch/  → GitHub Pages standalone deploy (default)
-const base = process.env.VITE_BASE || '/PanchgangaRainwatch/';
+//   Relative paths work on both GitHub Pages and Netlify
+const base = './';
 
 export default defineConfig({
   base,
